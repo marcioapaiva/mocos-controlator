@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<!--     <item name="android:displayOptions">useLogo|showHome|showTitle</item> -->
+	<item android:id="@+id/new_game"
+          android:title="New Game" 
+          android:icon="@drawable/content_new"
+          />
+	<item android:id="@+id/new_game"
+          android:title="New Game" 
+          android:icon="@drawable/content_new"
+          android:showAsAction="ifRoom"/>
+	
+<!--     <item android:id="@+id/help" -->
+<!--           android:title="Help" /> -->
+</menu>
