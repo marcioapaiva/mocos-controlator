@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.welcome.first"
+    package="com.marcioapf.mocos"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="14" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -22,6 +23,10 @@
         <activity
             android:label="Edição de Matéria"
             android:name=".EditActivity" >
+        </activity>
+        <activity
+            android:label="Exportar/Importar dados"
+            android:name=".ExportActivity" >
         </activity>
 
     </application>
