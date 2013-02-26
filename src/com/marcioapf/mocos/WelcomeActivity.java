@@ -44,7 +44,6 @@ public class WelcomeActivity extends Activity {
     	
         setContentView(R.layout.main);        
         
-//        llPrincipal = (LinearLayout) findViewById(R.id.llPrincipal); 
         llMaterias = (LinearLayout) findViewById(R.id.llmaterias);        
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
         btnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
@@ -54,7 +53,7 @@ public class WelcomeActivity extends Activity {
 			public void onClick(View v) {
 				LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, true);
 				arrLinMaterias.add(aux);
-				llMaterias.addView(aux, arrLinMaterias.size());
+				llMaterias.addView(aux);
 				updateTotal();
 			}
 		});
@@ -183,6 +182,16 @@ public class WelcomeActivity extends Activity {
             case R.id.check:
             	selected.setCheckNeeded(true);
             	selected.update();
+            	return true;
+            case R.id.notas:
+            	//TODO: Abrir nova activity para anotações 
+				try {
+					Intent intent = new Intent(this, Class.forName("com.marcioapf.mocos.NotasActivity"));
+					startActivity(intent);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+            	return true;
             default:
             	return super.onContextItemSelected(item);
         }

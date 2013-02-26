@@ -4,31 +4,39 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="14" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="14" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
-<!--         android:theme="@android:style/Theme.NoTitleBar" -->
-		
+
+        <!-- android:theme="@android:style/Theme.NoTitleBar" -->
+
         <activity
-            android:label="@string/app_name"
-            android:name=".WelcomeActivity" >
-            <intent-filter >
+            android:name="com.marcioapf.mocos.WelcomeActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:label="Edição de Matéria"
-            android:name=".EditActivity" >
+            android:name="com.marcioapf.mocos.EditActivity"
+            android:label="Edição de Matéria" >
         </activity>
         <activity
-            android:label="Exportar/Importar dados"
-            android:name=".ExportActivity" >
+            android:name="com.marcioapf.mocos.ExportActivity"
+            android:label="Exportar/Importar dados" >
         </activity>
-
+        <activity
+            android:name="com.marcioapf.mocos.NotasActivity"
+            android:label="@string/title_activity_notas" >
+        </activity>
     </application>
 
 </manifest>

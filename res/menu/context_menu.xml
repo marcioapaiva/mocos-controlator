@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/notas"
+          android:title="Notas" />
+    
     <item android:id="@+id/edit"
           android:title="Editar" />
     
@@ -9,4 +12,5 @@
     <item android:id="@+id/check"
           android:title="Conferir" />
     
+
 </menu>

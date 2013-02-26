@@ -3,6 +3,10 @@
 
     <string name="hello">Hello World, WelcomeActivity!</string>
     <string name="app_name">Moco\'s Controlator</string>
-	<string name="export_explanation">Exportar seus dados</string>
-	<string name="import_explanation">Importar seus dados</string>
+    <string name="export_explanation">Exportar seus dados</string>
+    <string name="import_explanation">Importar seus dados</string>
+    <string name="title_activity_notas">Notas</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>
