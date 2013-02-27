@@ -39,18 +39,18 @@ public class DatabaseDealer {
         editor.commit();
 	}
 	
-	public void addMemos(MateriaMemos mMemos, int num){
+	public void addMemos(MateriaMemos mMemos, long materiaID){
 		SharedPreferences table = WelcomeActivity.sharedPrefTable;
         SharedPreferences.Editor editor = table.edit();
         
-		editor.putString("nota1bmateria"+num, mMemos.getS1bim());
-		editor.putString("nota2bmateria"+num, mMemos.getS2bim());
-		editor.putString("notaExamemateria"+num, mMemos.getsExame());
+		editor.putString("nota1bmateria"+materiaID, mMemos.getS1bim());
+		editor.putString("nota2bmateria"+materiaID, mMemos.getS2bim());
+		editor.putString("notaExamemateria"+materiaID, mMemos.getsExame());
 		
 		editor.commit();
 	}
 	
-	public MateriaMemos getMemos(int num){
+	public MateriaMemos getMemos(long num){
 		SharedPreferences table = WelcomeActivity.sharedPrefTable;
 		
 		String s1bim = table.getString("nota1bmateria"+num, "");

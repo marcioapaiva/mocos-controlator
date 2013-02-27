@@ -1,5 +1,6 @@
 package com.marcioapf.mocos;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+@SuppressLint("ViewConstructor")
 public class LinMateria extends LinearLayout {
 	
 	LinMatBtm linMatBtm;

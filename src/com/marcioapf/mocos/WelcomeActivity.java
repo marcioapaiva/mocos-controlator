@@ -146,7 +146,6 @@ public class WelcomeActivity extends Activity {
     		materiasData.add(lm.getData());
     		sqlHelper.update(lm.getData());
     	}
-    	dbDealer.save(materiasData);
     }
     
     @Override
@@ -154,11 +153,9 @@ public class WelcomeActivity extends Activity {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
-        //System.out.println("Texto selecionado: " + ((TextView)v).getText());
         for (LinMateria lm : arrLinMaterias){
         	if(lm.linMatTop.tvMateria == v) {
         		selected = lm;
-        		//System.out.println("Selected: " + lm.getStrNome() + " " + lm.getAulasSemanais());
         		break;
         	}
         }
@@ -191,7 +188,7 @@ public class WelcomeActivity extends Activity {
             case R.id.notas:
 				try {
 					Intent intent = new Intent(this, Class.forName("com.marcioapf.mocos.NotasActivity"));
-					//intent.putExtra("MateriaID", selected.)
+					intent.putExtra("MateriaID", selected.getData().getSqlID());
 					startActivity(intent);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
