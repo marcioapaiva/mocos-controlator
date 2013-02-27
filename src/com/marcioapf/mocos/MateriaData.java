@@ -3,6 +3,10 @@ package com.marcioapf.mocos;
 public class MateriaData {
 	
 	
+	 public static int calculateMaxAtrasos(int aulasSemanais){
+		return (2*(int)Math.ceil((float)0.15f*16*aulasSemanais));
+	}
+	
 	public MateriaData(){
 		this(4, 0, "Nova", true);
 	}
@@ -13,8 +17,17 @@ public class MateriaData {
 		this.atrasos = atrasos;
 		this.strNome = strNome;
 		this.checkNeeded = checkNeeded;
+		sqlID = -1;
+	}
+	public long getSqlID() {
+		return sqlID;
+	}
+
+	public void setSqlID(long sqlID) {
+		this.sqlID = sqlID;
 	}
 	int aulasSemanais, atrasos;
+	long sqlID;
 	String strNome;
 	String notas1b, notas2b, notasExame;
 	boolean checkNeeded;

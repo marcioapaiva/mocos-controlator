@@ -10,6 +10,7 @@ public class NotasActivity extends Activity {
 	EditText et1bim, et2bim, etExame;
 	MateriaMemos mMemos;
 	DatabaseDealer dbDealer;
+	SQLHelper sqlHelper;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class NotasActivity extends Activity {
 		et1bim.setText(mMemos.getS1bim());
 		et2bim.setText(mMemos.getS2bim());
 		etExame.setText(mMemos.getsExame());
+		
 	}
 	
 	@Override

@@ -29,6 +29,7 @@ public class WelcomeActivity extends Activity {
     int totalAtrasos = 0;
 	private DatabaseDealer dbDealer;
 	public static SharedPreferences sharedPrefTable;
+	SQLHelper sqlHelper;
     
 	public static final int ACTIVITY_REQUEST_EDIT = 1;
 	public static final int ACTIVITY_REQUEST_IMPORT_EXPORT = 2;
@@ -40,7 +41,7 @@ public class WelcomeActivity extends Activity {
     	super.onCreate(savedInstanceState);    	
     	
     	sharedPrefTable = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
+    	sqlHelper = new SQLHelper(this);
     	
         setContentView(R.layout.main);        
         
@@ -54,6 +55,7 @@ public class WelcomeActivity extends Activity {
 				LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, true);
 				arrLinMaterias.add(aux);
 				llMaterias.addView(aux);
+				sqlHelper.insertAndID(aux.getData());
 				updateTotal();
 			}
 		});
@@ -141,6 +143,7 @@ public class WelcomeActivity extends Activity {
     	ArrayList<MateriaData> materiasData = new ArrayList<MateriaData>();
     	for (LinMateria lm : arrLinMaterias){
     		materiasData.add(lm.getData());
+    		sqlHelper.update(lm.getData());
     	}
     	dbDealer.save(materiasData);
     }
@@ -177,6 +180,7 @@ public class WelcomeActivity extends Activity {
             case R.id.remove:
             	arrLinMaterias.remove(selected);
             	llMaterias.removeView(selected);
+            	sqlHelper.remove(selected.getData().getSqlID());
             	updateTotal();
                 return true;
             case R.id.check:
@@ -205,6 +209,7 @@ public class WelcomeActivity extends Activity {
 	    			selected.setStrNome(data.getExtras().getString("strMateria"));
 	    			selected.setAulasSemanais(data.getExtras().getInt("maxAtrasos"));
 	    			selected.update();
+	    			sqlHelper.update(selected.getData());
 	    		}
 	    		break;
 	    	case ACTIVITY_REQUEST_IMPORT_EXPORT:

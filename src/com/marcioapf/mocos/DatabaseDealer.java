@@ -16,9 +16,13 @@ import android.util.Log;
 public class DatabaseDealer {
 	boolean mExternalStorageAvailable = false;
 	boolean mExternalStorageWriteable = false;
+	SQLHelper sqlHelper;
 	
 	public static final String PREFS_NAME = "MyPrefsFile";
 	
+	public DatabaseDealer(){
+		//sqlHelper = new SQLHelper();
+	}
 	
 	public void save(ArrayList<MateriaData> materiasData){
         //SharedPreferences table = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
