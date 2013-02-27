@@ -75,7 +75,8 @@ public class WelcomeActivity extends Activity {
     	dbDealer= new DatabaseDealer();
     	arrLinMaterias = new ArrayList<LinMateria>();
     	
-    	ArrayList<MateriaData> materiasData = dbDealer.restoreData();
+    	//ArrayList<MateriaData> materiasData = dbDealer.restoreData();
+    	ArrayList<MateriaData> materiasData = sqlHelper.retrieveAllMateriaData();
     	for (MateriaData mData : materiasData){
     		arrLinMaterias.add(new LinMateria(this, mData));
     	}

@@ -58,10 +58,12 @@ public class LinMateria extends LinearLayout {
 	public LinMateria(Context context, MateriaData materiaData){
 		this(context, materiaData.getStrNome(), materiaData.getAulasSemanais(), materiaData.isCheckNeeded());
 		this.setAtrasos(materiaData.getAtrasos());
+		this.getData().setSqlID(materiaData.getSqlID());
 		update();
 	}
 	public LinMateria(Context context, String strMateria, int aulasSemanais, boolean checkNeeded) {
 		super(context);
+		
 		this.context = context;
 		this.setOrientation(VERTICAL);
 		this.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));

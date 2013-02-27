@@ -1,6 +1,7 @@
 package com.marcioapf.mocos;
 
-import android.app.Activity;
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -100,14 +101,28 @@ public class SQLHelper extends SQLiteOpenHelper {
 		db.close();
 	}
 	
-	public Cursor all(Activity activity) {
-		  String[] from = { _ID, FIELD_NAME, FIELD_ATRASOS };
-		  String order = FIELD_NAME;
-
+	public ArrayList<MateriaData> retrieveAllMateriaData() {
+		  String[] from = { _ID, FIELD_NAME, FIELD_ATRASOS, FIELD_AULAS_SEMANAIS, FIELD_CHECK_NEEDED };
+		  String order = _ID;
+		  	
 		  SQLiteDatabase db = getReadableDatabase();
 		  Cursor cursor = db.query(TABLE_NAME, from, null, null, null, null, order);
 		  //activity.startManagingCursor(cursor);
 		  
-		  return cursor;
+		  ArrayList<MateriaData> aMateriaData = new ArrayList<MateriaData>();
+		  MateriaData mdaux;
+		  while (cursor.moveToNext()) {
+			  	mdaux = new MateriaData();
+			  	mdaux.setSqlID(cursor.getInt(0));
+			  	mdaux.setStrNome(cursor.getString(1));
+			  	Log.w("Database", "Recuperado. Id: " + cursor.getInt(0) + 
+			  									"Nome: " + cursor.getString(1));
+			  	mdaux.setAtrasos(cursor.getInt(2));
+			  	mdaux.setAulasSemanais(cursor.getInt(3));
+			  	mdaux.setCheckNeeded(cursor.getInt(4)!=0);
+			    aMateriaData.add(mdaux);
+		  }
+		  
+		  return aMateriaData;
 	}
 }
