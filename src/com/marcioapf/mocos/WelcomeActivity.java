@@ -184,9 +184,9 @@ public class WelcomeActivity extends Activity {
             	selected.update();
             	return true;
             case R.id.notas:
-            	//TODO: Abrir nova activity para anotações 
 				try {
 					Intent intent = new Intent(this, Class.forName("com.marcioapf.mocos.NotasActivity"));
+					//intent.putExtra("MateriaID", selected.)
 					startActivity(intent);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
