@@ -73,7 +73,6 @@ public class WelcomeActivity extends Activity {
         //Além disso, adiciona as LinMaterias ao LinearLayout
     	arrLinMaterias = new ArrayList<LinMateria>();
     	
-    	//ArrayList<MateriaData> materiasData = dbDealer.restoreData();
     	ArrayList<MateriaData> materiasData = sqlHelper.retrieveAllMateriaData();
     	for (MateriaData mData : materiasData){
     		arrLinMaterias.add(new LinMateria(this, mData));
@@ -189,8 +188,8 @@ public class WelcomeActivity extends Activity {
 	    			sqlHelper.update(selected.getData());
 	    		}
 	    		break;
-//	    	case ACTIVITY_REQUEST_IMPORT_EXPORT:
-//	    		if(resultCode == ACTIVITY_RESULT_IMPORT_MADE){
+	    	case ACTIVITY_REQUEST_IMPORT_EXPORT:
+	    		if(resultCode == ACTIVITY_RESULT_IMPORT_MADE){
 //	    			//Neste caso, precisamos reconstruir todos os LinMaterias, 
 //	    			//pois foi realizada uma importação de novos dados
 //
@@ -209,8 +208,8 @@ public class WelcomeActivity extends Activity {
 //
 //	    			//Atualiza a contagem do total de faltas
 //	    			updateTotal();
-//	    		}
-//	    		break;
+	    		}
+	    		break;
     	}
 
     }
