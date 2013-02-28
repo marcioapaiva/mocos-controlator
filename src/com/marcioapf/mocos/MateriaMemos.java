@@ -2,11 +2,21 @@ package com.marcioapf.mocos;
 
 public class MateriaMemos {
 	String s1bim, s2bim, sExame;
+	long sqlID;
 
-	public MateriaMemos (String s1bim, String s2bim, String sExame){
+	public long getSqlID() {
+		return sqlID;
+	}
+
+	public void setSqlID(long sqlID) {
+		this.sqlID = sqlID;
+	}
+
+	public MateriaMemos (String s1bim, String s2bim, String sExame, long sqlID){
 		this.s1bim = s1bim;
 		this.s2bim = s2bim;
 		this.sExame = sExame;
+		this.sqlID = sqlID;
 	}
 	
 	public void setAll(String s1bim, String s2bim, String sExame){

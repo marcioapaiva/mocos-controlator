@@ -9,12 +9,12 @@
     tools:context=".NotasActivity" >
 
     <TextView
-        android:id="@+id/nomeMateria"
+        android:id="@+id/tvNomeMateria"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Large Text"
+        android:text="Loading..."
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout

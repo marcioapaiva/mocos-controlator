@@ -27,7 +27,6 @@ public class WelcomeActivity extends Activity {
 	TextView tvFaltasTotais;
     int totalAulasSemanais = 0;
     int totalAtrasos = 0;
-	private DatabaseDealer dbDealer;
 	public static SharedPreferences sharedPrefTable;
 	SQLHelper sqlHelper;
     
@@ -72,7 +71,6 @@ public class WelcomeActivity extends Activity {
         //cria uma LinMateria para cada uma delas,
         //e as armazena em arrLinMaterias.
         //Além disso, adiciona as LinMaterias ao LinearLayout
-    	dbDealer= new DatabaseDealer();
     	arrLinMaterias = new ArrayList<LinMateria>();
     	
     	//ArrayList<MateriaData> materiasData = dbDealer.restoreData();
@@ -117,25 +115,6 @@ public class WelcomeActivity extends Activity {
     protected void onResume(){
     	super.onResume();
     	
-//    	for (int i=0; i<materias.size();i++){
-//    		llmaterias.removeViewAt(1);
-//    	}
-//    	
-//    	materias = new ArrayList<LinMateria>();
-//    	ArrayList<MateriaData> materiasData = dbDealer.restoreData();
-//    	
-//    	for (MateriaData mData : materiasData){
-//    		materias.add(new LinMateria(this, mData));
-//    	}
-//    	
-//        for (int i=0; i< materias.size(); i++)
-//	        llmaterias.addView(materias.get(i), i+1);
-// 
-////    	
-//    	for (LinMateria lm : arrLinMaterias)
-//    		lm.update();
-//
-//    	updateTotal();
     }
     
     protected void onPause() {
@@ -210,27 +189,28 @@ public class WelcomeActivity extends Activity {
 	    			sqlHelper.update(selected.getData());
 	    		}
 	    		break;
-	    	case ACTIVITY_REQUEST_IMPORT_EXPORT:
-	    		if(resultCode == ACTIVITY_RESULT_IMPORT_MADE){
-	    			//Neste caso, precisamos reconstruir todos os LinMaterias, 
-	    			//pois foi realizada uma importação de novos dados
-	    			
-	    			//Deletando as views originais do linearlayout
-	    			llMaterias.removeAllViews();
-	    			
-	    			arrLinMaterias = new ArrayList<LinMateria>();
-	    	    	
-	    	    	ArrayList<MateriaData> materiasData = dbDealer.restoreData();
-	    	    	for (MateriaData mData : materiasData){
-	    	    		arrLinMaterias.add(new LinMateria(this, mData));
-	    	    	}
-	    	    	
-	    	        for (LinMateria lm : arrLinMaterias)
-	    		        llMaterias.addView(lm);
-	    	        
-	    	        //Atualiza a contagem do total de faltas
-	    	        updateTotal();
-	    		}
+//	    	case ACTIVITY_REQUEST_IMPORT_EXPORT:
+//	    		if(resultCode == ACTIVITY_RESULT_IMPORT_MADE){
+//	    			//Neste caso, precisamos reconstruir todos os LinMaterias, 
+//	    			//pois foi realizada uma importação de novos dados
+//
+//	    			//Deletando as views originais do linearlayout
+//	    			llMaterias.removeAllViews();
+//
+//	    			arrLinMaterias = new ArrayList<LinMateria>();
+//
+//	    			ArrayList<MateriaData> materiasData = dbDealer.restoreData();
+//	    			for (MateriaData mData : materiasData){
+//	    				arrLinMaterias.add(new LinMateria(this, mData));
+//	    			}
+//
+//	    			for (LinMateria lm : arrLinMaterias)
+//	    				llMaterias.addView(lm);
+//
+//	    			//Atualiza a contagem do total de faltas
+//	    			updateTotal();
+//	    		}
+//	    		break;
     	}
 
     }
