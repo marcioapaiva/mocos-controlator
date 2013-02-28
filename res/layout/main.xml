@@ -33,12 +33,6 @@
 		     android:layout_width="fill_parent"
 		     android:layout_height="wrap_content"
 		     android:text="Nova Matéria" />
-		 
-		 <Button
-		     android:id="@+id/btnImportarExportar"
-		     android:layout_width="fill_parent"
-		     android:layout_height="wrap_content"
-		     android:text="Importar/Exportar" />
 	     
      </LinearLayout>
 </ScrollView>

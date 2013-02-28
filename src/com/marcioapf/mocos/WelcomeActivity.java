@@ -47,7 +47,6 @@ public class WelcomeActivity extends Activity {
         llMaterias = (LinearLayout) findViewById(R.id.llmaterias);        
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
         btnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
-        btnExportar = (Button) findViewById(R.id.btnImportarExportar);
         
 		btnAdicionar.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -56,13 +55,6 @@ public class WelcomeActivity extends Activity {
 				llMaterias.addView(aux);
 				sqlHelper.insertAndID(aux.getData());
 				updateTotal();
-			}
-		});
-		
-		btnExportar.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				Intent intent = new Intent(WelcomeActivity.this, ExportActivity.class);
-				startActivityForResult(intent, ACTIVITY_REQUEST_IMPORT_EXPORT);
 			}
 		});
 		
@@ -189,28 +181,6 @@ public class WelcomeActivity extends Activity {
 	    			sqlHelper.update(selected.getData());
 	    		}
 	    		break;
-//	    	case ACTIVITY_REQUEST_IMPORT_EXPORT:
-//	    		if(resultCode == ACTIVITY_RESULT_IMPORT_MADE){
-//	    			//Neste caso, precisamos reconstruir todos os LinMaterias, 
-//	    			//pois foi realizada uma importação de novos dados
-//
-//	    			//Deletando as views originais do linearlayout
-//	    			llMaterias.removeAllViews();
-//
-//	    			arrLinMaterias = new ArrayList<LinMateria>();
-//
-//	    			ArrayList<MateriaData> materiasData = dbDealer.restoreData();
-//	    			for (MateriaData mData : materiasData){
-//	    				arrLinMaterias.add(new LinMateria(this, mData));
-//	    			}
-//
-//	    			for (LinMateria lm : arrLinMaterias)
-//	    				llMaterias.addView(lm);
-//
-//	    			//Atualiza a contagem do total de faltas
-//	    			updateTotal();
-//	    		}
-//	    		break;
     	}
 
     }
