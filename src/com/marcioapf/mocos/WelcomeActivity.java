@@ -50,7 +50,7 @@ public class WelcomeActivity extends Activity {
         
 		btnAdicionar.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, true);
+				LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
 				arrLinMaterias.add(aux);
 				llMaterias.addView(aux);
 				sqlHelper.insertAndID(aux.getData());
