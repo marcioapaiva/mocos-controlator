@@ -132,7 +132,6 @@ public class LinMateria extends LinearLayout {
 			int pixels = (int) (dps * scale + 0.5f);
 			
 			
-			//this.setWeightSum(1.0f);
 			this.setOrientation(HORIZONTAL);
 			this.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, pixels));
 			
@@ -189,7 +188,6 @@ public class LinMateria extends LinearLayout {
 			
 			
 			((Activity)context).registerForContextMenu(tvMateria);
-			
 			
 			class ModifyFaltas implements OnClickListener {
 				public void onClick(View v){

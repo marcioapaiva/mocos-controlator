@@ -13,7 +13,8 @@
     <EditText
         android:id="@+id/nome_materia"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:selectAllOnFocus="true" />
 
     <TextView
         android:id="@+id/textView2"
@@ -25,7 +26,8 @@
         android:id="@+id/maximo_atrasos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number" />
+        android:inputType="number"
+        android:selectAllOnFocus="true" />
 
     <Button
         android:id="@+id/btn_save"

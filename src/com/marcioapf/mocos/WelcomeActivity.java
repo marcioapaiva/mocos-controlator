@@ -44,7 +44,7 @@ public class WelcomeActivity extends Activity {
     	
         setContentView(R.layout.main);        
         
-        llMaterias = (LinearLayout) findViewById(R.id.llmaterias);        
+        llMaterias = (LinearLayout) findViewById(R.id.llmaterias);
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
         btnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
         
@@ -54,18 +54,22 @@ public class WelcomeActivity extends Activity {
 				arrLinMaterias.add(aux);
 				llMaterias.addView(aux);
 				sqlHelper.insertAndID(aux.getData());
+            	try{
+            		Intent intent = new Intent(WelcomeActivity.this, Class.forName("com.marcioapf.mocos.EditActivity"));
+            		intent.putExtra("strMateria", aux.getStrNome());
+            		intent.putExtra("maxAtrasos", aux.getAulasSemanais());
+            		startActivityForResult(intent, ACTIVITY_REQUEST_EDIT);
+            	}
+            	catch(ClassNotFoundException e){
+            		e.printStackTrace();
+            	}
 				updateTotal();
 			}
 		});
-		
     	
-        //Lê as matérias a partir do SharedPreferences,
-        //cria uma LinMateria para cada uma delas,
-        //e as armazena em arrLinMaterias.
-        //Além disso, adiciona as LinMaterias ao LinearLayout
+		
     	arrLinMaterias = new ArrayList<LinMateria>();
     	
-    	//ArrayList<MateriaData> materiasData = dbDealer.restoreData();
     	ArrayList<MateriaData> materiasData = sqlHelper.retrieveAllMateriaData();
     	for (MateriaData mData : materiasData){
     		arrLinMaterias.add(new LinMateria(this, mData));

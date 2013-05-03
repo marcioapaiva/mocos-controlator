@@ -30,6 +30,7 @@ public class EditActivity extends Activity{
         
 		Button btnSave = (Button) findViewById(R.id.btn_save);
 		
+		
 		btnSave.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				intent.putExtra("strMateria", etMateria.getText().toString());
