@@ -36,8 +36,9 @@ public class WelcomeActivity extends Activity implements OnClickListener{
     
 	public static final int ACTIVITY_REQUEST_EDIT = 1;
 	public static final int ACTIVITY_REQUEST_IMPORT_EXPORT = 2;
-	public static final int ACTIVITY_RESULT_IMPORT_MADE = 2;
-	public static final int ACTIVITY_REQUEST_SETTINGS = 2;
+	public static final int ACTIVITY_RESULT_IMPORT_MADE = 3;
+	public static final int ACTIVITY_REQUEST_SETTINGS = 4;
+	public static final int REQUEST_LINK_TO_DBX = 11;
 	public static final String PREFS_NAME = "MyPrefsFile";
 	
 	private DbxAccountManager mDbxAcctMgr;
@@ -47,7 +48,7 @@ public class WelcomeActivity extends Activity implements OnClickListener{
     	super.onCreate(savedInstanceState);    	
     	
     	mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(), 
-    				   Sensitive.DROPBOX_APP_KEY, Sensitive.DROPBOX_APP_SECRET);
+    				   Sensitive.DBX_APP_KEY, Sensitive.DBX_APP_SECRET);
     	sharedPrefTable = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     	sqlHelper = new SQLHelper(this);
     	
@@ -176,7 +177,16 @@ public class WelcomeActivity extends Activity implements OnClickListener{
 	    			selected.update();
 	    			sqlHelper.update(selected.getData());
 	    		}
+	    	case REQUEST_LINK_TO_DBX:
+	    		if(resultCode == RESULT_OK) {
+	    			Log.w("Dropbox", "Linked successfully!");
+	    		}
+	    		else {
+	    			Log.w("Dropbox", "Link unsuccessful... =(");
+	    		}
 	    		break;
+	    	default:
+	    		super.onActivityResult(requestCode, resultCode, data);
     	}
 
     }
@@ -203,9 +213,7 @@ public class WelcomeActivity extends Activity implements OnClickListener{
     }
 
 	private void dropboxSync() {
-		// TODO Auto-generated method stub
-		Log.w("dropboxSync()", "Method was called, but isn't implemented yet");
-		
+		mDbxAcctMgr.startLink((Activity)this, REQUEST_LINK_TO_DBX);
 	}
 
 	private void openSettingsActivity() {
