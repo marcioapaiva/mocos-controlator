@@ -8,16 +8,18 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+
 public class EditActivity extends Activity{
 	
 	EditText etMateria, etAulasSemanais;
 	Intent intent;
 	Bundle bundle;
 	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.edit);     
+        setContentView(R.layout.edit_activity);     
         
         etMateria = (EditText)findViewById(R.id.nome_materia);
         etAulasSemanais = (EditText)findViewById(R.id.maximo_atrasos);
@@ -47,7 +49,4 @@ public class EditActivity extends Activity{
 		super.onPause();
 		
 	}
-//	public void onDestroy(){
-//		super.onDestroy();
-//	}
 }

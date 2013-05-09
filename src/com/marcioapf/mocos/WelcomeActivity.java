@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +35,7 @@ public class WelcomeActivity extends Activity {
 	public static final int ACTIVITY_REQUEST_EDIT = 1;
 	public static final int ACTIVITY_REQUEST_IMPORT_EXPORT = 2;
 	public static final int ACTIVITY_RESULT_IMPORT_MADE = 2;
+	public static final int ACTIVITY_REQUEST_SETTINGS = 2;
 	public static final String PREFS_NAME = "MyPrefsFile";
 	
     @Override
@@ -42,7 +45,7 @@ public class WelcomeActivity extends Activity {
     	sharedPrefTable = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     	sqlHelper = new SQLHelper(this);
     	
-        setContentView(R.layout.main);        
+        setContentView(R.layout.welcome_activity);        
         
         llMaterias = (LinearLayout) findViewById(R.id.llmaterias);
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
@@ -189,6 +192,42 @@ public class WelcomeActivity extends Activity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.options_menu, menu);
+    	return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+    	switch (item.getItemId()){
+    	case R.id.dropbox_sync:
+    		dropboxSync();
+    		return true;
+    	case R.id.settings:
+    		openSettingsActivity();
+    		return true;
+    	default:
+    		return super.onOptionsItemSelected(item);
+    	}
+    }
+
+	private void dropboxSync() {
+		// TODO Auto-generated method stub
+		Log.w("dropboxSync()", "Method was called, but isn't implemented yet");
+		
+	}
+
+	private void openSettingsActivity() {
+		Intent intent;
+		try {
+			intent = new Intent(this, Class.forName("com.marcioapf.mocos.SettingsActivity"));
+			startActivityForResult(intent, ACTIVITY_REQUEST_SETTINGS);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 

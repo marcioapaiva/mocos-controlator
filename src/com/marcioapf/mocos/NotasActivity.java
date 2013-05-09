@@ -17,7 +17,7 @@ public class NotasActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_notas);
+		setContentView(R.layout.grades_activity);
 		
 		
 		Intent intent = this.getIntent();
