@@ -8,7 +8,7 @@ public class SettingsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.edit_activity);
+		setContentView(R.layout.settings_activity);
         
 	}
 	

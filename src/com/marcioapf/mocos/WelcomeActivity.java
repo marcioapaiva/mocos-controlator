@@ -213,7 +213,10 @@ public class WelcomeActivity extends Activity implements OnClickListener{
     }
 
 	private void dropboxSync() {
-		mDbxAcctMgr.startLink((Activity)this, REQUEST_LINK_TO_DBX);
+		if(!mDbxAcctMgr.hasLinkedAccount()) {
+			mDbxAcctMgr.startLink((Activity)this, REQUEST_LINK_TO_DBX);
+		}
+		//Do the sync stuff
 	}
 
 	private void openSettingsActivity() {
