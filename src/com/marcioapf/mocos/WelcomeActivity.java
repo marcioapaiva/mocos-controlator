@@ -20,7 +20,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends Activity implements OnClickListener{
 	
 	LinearLayout llMaterias;//, llPrincipal;
 	Button btnAdicionar, btnExportar;
@@ -51,25 +51,7 @@ public class WelcomeActivity extends Activity {
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
         btnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
         
-		btnAdicionar.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
-				arrLinMaterias.add(aux);
-				llMaterias.addView(aux);
-				sqlHelper.insertAndID(aux.getData());
-            	try{
-            		Intent intent = new Intent(WelcomeActivity.this, Class.forName("com.marcioapf.mocos.EditActivity"));
-            		intent.putExtra("strMateria", aux.getStrNome());
-            		intent.putExtra("maxAtrasos", aux.getAulasSemanais());
-            		startActivityForResult(intent, ACTIVITY_REQUEST_EDIT);
-            	}
-            	catch(ClassNotFoundException e){
-            		e.printStackTrace();
-            	}
-				updateTotal();
-			}
-		});
-    	
+		btnAdicionar.setOnClickListener(this);
 		
     	arrLinMaterias = new ArrayList<LinMateria>();
     	
@@ -81,7 +63,6 @@ public class WelcomeActivity extends Activity {
         for (LinMateria lm : arrLinMaterias)
 	        llMaterias.addView(lm);
         
-        //Atualiza a contagem do total de faltas
         updateTotal();
 		
     }
@@ -227,6 +208,23 @@ public class WelcomeActivity extends Activity {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void onClick(View v) {
+		LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
+		arrLinMaterias.add(aux);
+		llMaterias.addView(aux);
+		sqlHelper.insertAndID(aux.getData());
+    	try{
+    		Intent intent = new Intent(WelcomeActivity.this, Class.forName("com.marcioapf.mocos.EditActivity"));
+    		intent.putExtra("strMateria", aux.getStrNome());
+    		intent.putExtra("maxAtrasos", aux.getAulasSemanais());
+    		startActivityForResult(intent, ACTIVITY_REQUEST_EDIT);
+    	}
+    	catch(ClassNotFoundException e){
+    		e.printStackTrace();
+    	}
+		updateTotal();
 	}
 }
 
