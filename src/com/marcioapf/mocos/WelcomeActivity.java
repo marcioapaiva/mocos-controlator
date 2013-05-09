@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dropbox.sync.android.DbxAccountManager;
+
 public class WelcomeActivity extends Activity implements OnClickListener{
 	
 	LinearLayout llMaterias;//, llPrincipal;
@@ -38,10 +40,14 @@ public class WelcomeActivity extends Activity implements OnClickListener{
 	public static final int ACTIVITY_REQUEST_SETTINGS = 2;
 	public static final String PREFS_NAME = "MyPrefsFile";
 	
-    @Override
+	private DbxAccountManager mDbxAcctMgr;
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);    	
     	
+    	mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(), 
+    				   Sensitive.DROPBOX_APP_KEY, Sensitive.DROPBOX_APP_SECRET);
     	sharedPrefTable = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     	sqlHelper = new SQLHelper(this);
     	
@@ -51,7 +57,7 @@ public class WelcomeActivity extends Activity implements OnClickListener{
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
         btnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
         
-		btnAdicionar.setOnClickListener(this);
+		btnAdicionar.setOnClickListener(this);		
 		
     	arrLinMaterias = new ArrayList<LinMateria>();
     	
@@ -64,6 +70,8 @@ public class WelcomeActivity extends Activity implements OnClickListener{
 	        llMaterias.addView(lm);
         
         updateTotal();
+        
+            
 		
     }
     
