@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="60dp"
+                  android:id="@+id/lin_materia_top">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nova"
+                android:textSize="22sp"
+                android:minWidth="100dp"
+                android:id="@+id/tv_materia"/>
+        <Button
+                android:layout_height="match_parent"
+                android:layout_width="40dp"
+                android:id="@+id/rem_falta"
+                android:text="-F"/>
+        <Button
+                android:layout_height="match_parent"
+                android:layout_width="40dp"
+                android:id="@+id/rem_atraso"
+                android:text="-A"/>
+        <Button
+                android:layout_height="match_parent"
+                android:layout_width="40dp"
+                android:id="@+id/add_atraso"
+                android:text="+A"/>
+        <Button
+                android:layout_height="match_parent"
+                android:layout_width="40dp"
+                android:id="@+id/add_falta"
+                android:text="+F"/>
+        <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(!)"
+                android:textSize="22sp"
+                android:textColor="#FFFFFF00"
+                android:id="@+id/cb_checked"/>
+    </LinearLayout>
+
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/lin_materia_bot">
+        <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.4"
+                android:id="@+id/pbar_faltas"
+                style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="3.5/15"
+                android:gravity="center"
+                android:minWidth="70dp"
+                android:id="@+id/tv_faltas"/>
+    </LinearLayout>
+</LinearLayout>

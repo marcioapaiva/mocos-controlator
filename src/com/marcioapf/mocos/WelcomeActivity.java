@@ -129,7 +129,7 @@ public class WelcomeActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
         for (LinMateria lm : arrLinMaterias){
-        	if(lm.linMatTop.tvMateria == v) {
+        	if(lm.getMateriaTextView() == v) {
         		selected = lm;
         		break;
         	}
