@@ -51,19 +51,15 @@ public class WelcomeActivity extends Activity {
 
 		btnAdicionar.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				LinMateria aux = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
-				arrLinMaterias.add(aux);
-				llMaterias.addView(aux);
-				sqlHelper.insertAndID(aux.getData());
-            	try{
-            		Intent intent = new Intent(WelcomeActivity.this, Class.forName("com.marcioapf.mocos.EditActivity"));
-            		intent.putExtra("strMateria", aux.getStrNome());
-            		intent.putExtra("maxAtrasos", aux.getAulasSemanais());
-            		startActivityForResult(intent, ACTIVITY_REQUEST_EDIT);
-            	}
-            	catch(ClassNotFoundException e){
-            		e.printStackTrace();
-            	}
+				final LinMateria materia = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
+				createEditSubjectDialog(materia, new Runnable() {
+				    @Override
+				    public void run() {
+				        arrLinMaterias.add(materia);
+				        llMaterias.addView(materia);
+				        sqlHelper.insertAndID(materia.getData());
+				    }
+				}).show();
 				updateTotal();
 			}
 		});
@@ -128,13 +124,18 @@ public class WelcomeActivity extends Activity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        final LinMateria currentSelected = selected;
         switch (item.getItemId()) {
             case R.id.edit:
-                createEditSubjectDialog().show();
+                createEditSubjectDialog(currentSelected, new Runnable() {
+                    @Override
+                    public void run() {
+                        sqlHelper.update(currentSelected.getData());
+                    }
+                }).show();
                 return true;
             case R.id.remove:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                final LinMateria currentSelected = selected;
                 builder.setTitle("Remover")
                     .setMessage("Tem certeza que deseja remover \"" + selected.getStrNome() + "\"?")
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
@@ -163,16 +164,15 @@ public class WelcomeActivity extends Activity {
         }
     }
 
-    private AlertDialog createEditSubjectDialog() {
+    private AlertDialog createEditSubjectDialog(final LinMateria materia, final Runnable success) {
         View dialogContent = View.inflate(this, R.layout.edit_dialog, null);
         final TextView etNomeMateria = (TextView) dialogContent
                 .findViewById(R.id.nome_materia);
         final TextView etAulasSemanais = (TextView) dialogContent
                 .findViewById(R.id.maximo_atrasos);
-        final LinMateria currentSelect = selected;
 
-        etNomeMateria.setText(currentSelect.getStrNome());
-        etAulasSemanais.setText(Integer.toString(currentSelect.getAulasSemanais()));
+        etNomeMateria.setText(materia.getStrNome());
+        etAulasSemanais.setText(Integer.toString(materia.getAulasSemanais()));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Edição de Matéria")
@@ -180,11 +180,13 @@ public class WelcomeActivity extends Activity {
             .setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    currentSelect.setStrNome(etNomeMateria.getText().toString());
-                    currentSelect.setAulasSemanais(
-                            Integer.parseInt(etAulasSemanais.getText().toString()));
-                    currentSelect.update();
-                    sqlHelper.update(currentSelect.getData());
+                    materia.setStrNome(etNomeMateria.getText().toString());
+                    materia.setAulasSemanais(
+                        Integer.parseInt(etAulasSemanais.getText().toString()));
+                    materia.update();
+                    if (success != null) {
+                        success.run();
+                    }
                 }
             })
             .setNegativeButton("Cancelar", null);
