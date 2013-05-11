@@ -139,23 +139,33 @@ public class WelcomeActivity extends Activity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Intent intent;
         switch (item.getItemId()) {
             case R.id.edit:
                 createEditSubjectDialog().show();
                 return true;
             case R.id.remove:
-                arrLinMaterias.remove(selected);
-                llMaterias.removeView(selected);
-                sqlHelper.remove(selected.getData().getSqlID());
-                updateTotal();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                final LinMateria currentSelected = selected;
+                builder.setTitle("Remover")
+                    .setMessage("Tem certeza que deseja remover \"" + selected.getStrNome() + "\"?")
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            arrLinMaterias.remove(currentSelected);
+                            llMaterias.removeView(currentSelected);
+                            sqlHelper.remove(currentSelected.getData().getSqlID());
+                            updateTotal();
+                        }
+                    })
+                    .setNegativeButton("Não", null);
+                builder.show();
                 return true;
             case R.id.check:
                 selected.setCheckNeeded(true);
                 selected.update();
                 return true;
             case R.id.notas:
-                intent = new Intent(this, NotasActivity.class);
+                Intent intent = new Intent(this, NotasActivity.class);
                 intent.putExtra("MateriaID", selected.getData().getSqlID());
                 startActivity(intent);
                 return true;
