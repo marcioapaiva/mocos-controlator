@@ -138,39 +138,31 @@ public class WelcomeActivity extends Activity {
     
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
-            case R.id.edit:            	
-            	try{
-            		Intent intent = new Intent(this, Class.forName("com.marcioapf.mocos.EditActivity"));
-            		intent.putExtra("strMateria", selected.getStrNome());
-            		intent.putExtra("maxAtrasos", selected.getAulasSemanais());
-            		startActivityForResult(intent, ACTIVITY_REQUEST_EDIT);
-            	}
-            	catch(ClassNotFoundException e){
-            		e.printStackTrace();
-            	}
+            case R.id.edit:
+                intent = new Intent(this, EditActivity.class);
+                intent.putExtra("strMateria", selected.getStrNome());
+                intent.putExtra("maxAtrasos", selected.getAulasSemanais());
+                startActivityForResult(intent, ACTIVITY_REQUEST_EDIT);
                 return true;
             case R.id.remove:
-            	arrLinMaterias.remove(selected);
-            	llMaterias.removeView(selected);
-            	sqlHelper.remove(selected.getData().getSqlID());
-            	updateTotal();
+                arrLinMaterias.remove(selected);
+                llMaterias.removeView(selected);
+                sqlHelper.remove(selected.getData().getSqlID());
+                updateTotal();
                 return true;
             case R.id.check:
-            	selected.setCheckNeeded(true);
-            	selected.update();
-            	return true;
+                selected.setCheckNeeded(true);
+                selected.update();
+                return true;
             case R.id.notas:
-				try {
-					Intent intent = new Intent(this, Class.forName("com.marcioapf.mocos.NotasActivity"));
-					intent.putExtra("MateriaID", selected.getData().getSqlID());
-					startActivity(intent);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-            	return true;
+                intent = new Intent(this, NotasActivity.class);
+                intent.putExtra("MateriaID", selected.getData().getSqlID());
+                startActivity(intent);
+                return true;
             default:
-            	return super.onContextItemSelected(item);
+                return super.onContextItemSelected(item);
         }
     }
     
