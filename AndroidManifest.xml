@@ -24,16 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <activity
-            android:name="com.marcioapf.mocos.EditActivity"
-            android:label="Edição de Matéria"
-            android:windowSoftInputMode="stateVisible" >
-        </activity>
-        <activity
-            android:name="com.marcioapf.mocos.ExportActivity"
-            android:label="Exportar/Importar dados" >
-        </activity>
         <activity
             android:name="com.marcioapf.mocos.NotasActivity"
             android:label="@string/title_activity_notas" >
