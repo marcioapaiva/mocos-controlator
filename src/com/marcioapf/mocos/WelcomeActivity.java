@@ -103,17 +103,6 @@ public class WelcomeActivity extends Activity {
     	tvFaltasTotais.setText("Total: " + (float)totalAtrasos/2 + "/" + ((int)Math.ceil((float)0.10f*16*totalAulasSemanais)));
     }
 
-    @Override
-    protected void onStop() {
-    	super.onStop();
-    }
-
-    @Override
-    protected void onResume(){
-    	super.onResume();
-
-    }
-
     protected void onPause() {
     	super.onPause();
     	//Retirar somente a data de cada matéria
