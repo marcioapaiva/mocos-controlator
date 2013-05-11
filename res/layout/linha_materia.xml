@@ -2,12 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
           android:orientation="vertical"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content">
+          android:layout_height="wrap_content"
+          android:background="@drawable/linha_materia_card"
+          android:layout_marginLeft="10dp"
+          android:layout_marginRight="10dp"
+          android:layout_marginTop="10dp"
+          android:paddingBottom="2dp">
 
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
-                  android:layout_height="60dp"
-                  android:id="@+id/lin_materia_top">
+                  android:layout_height="match_parent"
+                  android:layout_marginLeft="5dp"
+                  android:layout_marginRight="5dp"
+                  android:id="@+id/interaction_layout"
+                  android:gravity="center">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -15,38 +23,63 @@
                 android:textSize="22sp"
                 android:minWidth="100dp"
                 android:id="@+id/tv_materia"/>
-        <Button
-                android:layout_height="match_parent"
-                android:layout_width="40dp"
-                android:id="@+id/rem_falta"
-                android:text="-F"/>
-        <Button
-                android:layout_height="match_parent"
-                android:layout_width="40dp"
-                android:id="@+id/rem_atraso"
-                android:text="-A"/>
-        <Button
-                android:layout_height="match_parent"
-                android:layout_width="40dp"
-                android:id="@+id/add_atraso"
-                android:text="+A"/>
-        <Button
-                android:layout_height="match_parent"
-                android:layout_width="40dp"
-                android:id="@+id/add_falta"
-                android:text="+F"/>
-        <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(!)"
-                android:textSize="22sp"
-                android:textColor="#FFFFFF00"
-                android:id="@+id/cb_checked"/>
+
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_width="match_parent"
+                      android:layout_height="60dp"
+                      android:id="@+id/lin_materia_top"
+                      android:gravity="center_vertical|right">
+            <include layout="@layout/vertical_divisor"/>
+            <Button
+                    style="@style/EditSubjectStyle"
+                    android:layout_height="match_parent"
+                    android:layout_width="40dp"
+                    android:id="@+id/rem_falta"
+                    android:text="-F"/>
+            <include layout="@layout/vertical_divisor"/>
+            <Button
+                    style="@style/EditSubjectStyle"
+                    android:layout_height="match_parent"
+                    android:layout_width="40dp"
+                    android:id="@+id/rem_atraso"
+                    android:text="-A"/>
+            <include layout="@layout/vertical_divisor"/>
+            <Button
+                    style="@style/EditSubjectStyle"
+                    android:layout_height="match_parent"
+                    android:layout_width="40dp"
+                    android:id="@+id/add_atraso"
+                    android:text="+A"/>
+            <include layout="@layout/vertical_divisor"/>
+            <Button
+                    style="@style/EditSubjectStyle"
+                    android:layout_height="match_parent"
+                    android:layout_width="40dp"
+                    android:id="@+id/add_falta"
+                    android:text="+F"/>
+            <include layout="@layout/vertical_divisor"/>
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(!)"
+                    android:textSize="22sp"
+                    android:textColor="#C0C0C000"
+                    android:id="@+id/cb_checked"/>
+        </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#E5E5E5" />
 
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
+                  android:layout_marginLeft="5dp"
+                  android:layout_marginRight="5dp"
                   android:id="@+id/lin_materia_bot">
         <ProgressBar
                 android:layout_width="match_parent"
@@ -54,6 +87,7 @@
                 android:layout_weight="0.4"
                 android:id="@+id/pbar_faltas"
                 style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"/>
+        <include layout="@layout/vertical_divisor"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

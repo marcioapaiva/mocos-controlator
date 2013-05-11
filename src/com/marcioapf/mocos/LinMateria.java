@@ -121,8 +121,8 @@ public class LinMateria extends LinearLayout {
             tvFaltas.setTextColor(Color.RED);
             tvMateria.setTextColor(Color.RED);
         } else {
-            tvFaltas.setTextColor(Color.LTGRAY);
-            tvMateria.setTextColor(Color.LTGRAY);
+            tvFaltas.setTextColor(Color.DKGRAY);
+            tvMateria.setTextColor(Color.DKGRAY);
         }
         System.out.println("updated");
 

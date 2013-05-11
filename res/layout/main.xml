@@ -2,8 +2,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/scrllvwNo1" 
 	android:layout_width="fill_parent" 
-	android:layout_height="wrap_content"
-	android:orientation="vertical" >
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+    android:background="#E5E5E5">
 			
 	<LinearLayout
 	    android:id="@+id/llPrincipal"
@@ -15,17 +16,17 @@
 		    android:id="@+id/tvFaltasTotais"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
-		    android:text="inicializing" 
-		    android:gravity="center" 
-		    android:textSize="30dp" />
-		
-		
+            android:text="initializing"
+            android:textColor="@android:color/darker_gray"
+            android:gravity="center"
+		    android:textSize="30sp" />
 		
 		 <LinearLayout
 		    android:id="@+id/llmaterias"
 		    android:orientation="vertical"
 		    android:layout_width="fill_parent"
-		    android:layout_height="fill_parent">
+		    android:layout_height="fill_parent"
+		    android:layout_marginBottom="10dp">
 	     </LinearLayout>
 
 		 <Button

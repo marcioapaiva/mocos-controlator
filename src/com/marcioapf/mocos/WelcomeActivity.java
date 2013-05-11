@@ -96,10 +96,10 @@ public class WelcomeActivity extends Activity {
     		tvFaltasTotais.setTextColor(Color.RED);
     	}
     	else {
-    		tvFaltasTotais.setTextColor(Color.LTGRAY);
+    		tvFaltasTotais.setTextColor(Color.DKGRAY);
     	}
     		
-    	tvFaltasTotais.setText((float)totalAtrasos/2 + "/" + ((int)Math.ceil((float)0.10f*16*totalAulasSemanais)));
+    	tvFaltasTotais.setText("Total: " + (float)totalAtrasos/2 + "/" + ((int)Math.ceil((float)0.10f*16*totalAulasSemanais)));
     }
     
     @Override

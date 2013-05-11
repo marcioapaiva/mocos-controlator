@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="EditSubjectStyle">
+        <item name="android:background">@drawable/edit_subject_background_color</item>
+        <item name="android:textColor">@color/edit_subject_text_color</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+</resources>
