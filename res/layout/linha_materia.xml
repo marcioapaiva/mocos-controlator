@@ -86,7 +86,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:id="@+id/pbar_faltas"
-                style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"/>
+                style="@style/ProgressBarStyle"/>
         <include layout="@layout/vertical_divisor"/>
         <TextView
                 android:layout_width="wrap_content"
