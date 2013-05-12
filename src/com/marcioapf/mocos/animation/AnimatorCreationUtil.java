@@ -1,7 +1,5 @@
 package com.marcioapf.mocos.animation;
 
-import android.R;
-import android.graphics.Color;
 import android.view.animation.Interpolator;
 import android.widget.TextView;
 import com.nineoldandroids.animation.ArgbEvaluator;
@@ -27,22 +25,22 @@ public class AnimatorCreationUtil {
         };
     private static final TypeEvaluator argEvaluator = new ArgbEvaluator();
 
-    public static final ObjectAnimator ofFloat(Object object,
-                                                String propertyName,
-                                                long duration,
-                                                Interpolator interpolator,
-                                                float... values) {
+    public static ObjectAnimator ofFloat(Object object,
+                                               String propertyName,
+                                               long duration,
+                                               Interpolator interpolator,
+                                               float... values) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(object, propertyName, values);
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);
         return animator;
     }
 
-    public static final ObjectAnimator ofTextColor(TextView tv, long duration, Integer... values) {
+    public static ObjectAnimator ofTextColor(TextView tv, long duration, Integer... values) {
         return AnimatorCreationUtil.ofTextColor(new TextView[]{tv}, duration, values);
     }
 
-    public static final ObjectAnimator ofTextColor(TextView[] tvs,
+    public static ObjectAnimator ofTextColor(TextView[] tvs,
                                                    long duration,
                                                    Integer... values) {
         ObjectAnimator animator = ObjectAnimator.ofObject(tvs, textColorProperty,

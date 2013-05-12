@@ -9,12 +9,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
@@ -31,6 +26,10 @@ public class LinMateria extends LinearLayout {
     private final ProgressBar pBarFaltas;
     private final Button btnAddAtraso, btnRemAtraso, btnAddFalta, btnRemFalta;
     private final TextView tvFaltas;
+
+    private final ObjectAnimator textColorAnimator;
+    private final ObjectAnimator progressBarAnimator;
+    private final ObjectAnimator checkBoxAlphaAnimator;
 
     private final IntProperty<ProgressBar> progressProperty = new IntProperty<ProgressBar>("progress") {
         @Override
@@ -71,6 +70,23 @@ public class LinMateria extends LinearLayout {
         btnRemAtraso = getView(R.id.rem_atraso);
         btnAddAtraso = getView(R.id.add_atraso);
         btnAddFalta = getView(R.id.add_falta);
+
+        // animators
+        textColorAnimator = AnimatorCreationUtil.ofTextColor(
+            new TextView[]{tvFaltas, tvMateria}, 300, Color.DKGRAY);
+        progressBarAnimator = ObjectAnimator.ofInt(pBarFaltas, progressProperty, 0);
+        progressBarAnimator.setInterpolator(accDeccInterpolator);
+        progressBarAnimator.setDuration(120);
+        checkBoxAlphaAnimator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0);
+        checkBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!data.isCheckNeeded()) {
+                    cbChecked.setVisibility(INVISIBLE);
+                    cbChecked.setChecked(true);
+                }
+            }
+        });
 
         data = new MateriaData();
 
@@ -136,20 +152,18 @@ public class LinMateria extends LinearLayout {
         tvMateria.setText(data.getStrNome());
         if (pBarFaltas.getProgress() != data.getAtrasos() * 1000) {
             pBarFaltas.setMax(2000 * (int) Math.ceil(0.15f * 16 * data.getAulasSemanais()));
-            Animator anmtr = ObjectAnimator.ofInt(pBarFaltas, progressProperty, data.getAtrasos() * 1000);
-            anmtr.setInterpolator(accDeccInterpolator);
-            anmtr.setDuration(120);
-            anmtr.start();
+            progressBarAnimator.setIntValues(data.getAtrasos() * 1000);
+            progressBarAnimator.start();
         }
 
         if(2*(int)Math.ceil(0.15f*16*data.getAulasSemanais()) - data.getAtrasos() <= 4) {
             if (tvFaltas.getCurrentTextColor() != Color.RED) {
-                AnimatorCreationUtil.ofTextColor(new TextView[]{tvFaltas, tvMateria},
-                    300, Color.RED).start();
+                textColorAnimator.setIntValues(Color.RED);
+                textColorAnimator.start();
             }
         } else if (tvFaltas.getCurrentTextColor() != Color.DKGRAY) {
-            AnimatorCreationUtil.ofTextColor(new TextView[]{tvFaltas, tvMateria},
-                300, Color.DKGRAY).start();
+            textColorAnimator.setIntValues(Color.DKGRAY);
+            textColorAnimator.start();
         }
         System.out.println("updated");
 
@@ -157,22 +171,15 @@ public class LinMateria extends LinearLayout {
             if (cbChecked.getVisibility() != VISIBLE) {
                 cbChecked.setVisibility(VISIBLE);
                 cbChecked.setChecked(false);
-                Animator animator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0, 1);
-                animator.setDuration(500);
-                animator.start();
+                checkBoxAlphaAnimator.setFloatValues(0, 1);
+                checkBoxAlphaAnimator.setDuration(500);
+                checkBoxAlphaAnimator.start();
             }
         }
         else if (cbChecked.getVisibility() != INVISIBLE) {
-            Animator animator = ObjectAnimator.ofFloat(cbChecked, "alpha", 1, 0);
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    cbChecked.setVisibility(INVISIBLE);
-                    cbChecked.setChecked(true);
-                }
-            });
-            animator.setDuration(300);
-            animator.start();
+            checkBoxAlphaAnimator.setFloatValues(1, 0);
+            checkBoxAlphaAnimator.setDuration(300);
+            checkBoxAlphaAnimator.start();
         }
     }
 
