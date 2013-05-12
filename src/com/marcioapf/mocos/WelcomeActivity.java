@@ -187,7 +187,7 @@ public class WelcomeActivity extends Activity {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                animateAll(1, -getWindowManager().getDefaultDisplay().getWidth(), 0).start();
+                WelcomeActivity.super.onBackPressed();
             }
         });
         animatorSet.start();
