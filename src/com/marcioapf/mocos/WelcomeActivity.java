@@ -1,6 +1,7 @@
 package com.marcioapf.mocos;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,19 +15,17 @@ import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.ObjectAnimator;
+import android.widget.*;
+import com.nineoldandroids.animation.*;
+import com.nineoldandroids.util.Property;
 import com.nineoldandroids.view.ViewHelper;
 
 public class WelcomeActivity extends Activity {
-	
+
+    ScrollView scrollView;
 	LinearLayout llMaterias;//, llPrincipal;
 	Button btnAdicionar, btnExportar;
 	ArrayList<LinMateria> arrLinMaterias;
@@ -51,6 +50,7 @@ public class WelcomeActivity extends Activity {
 
         setContentView(R.layout.main);
 
+        scrollView = (ScrollView) findViewById(R.id.scrllvwNo1);
         llMaterias = (LinearLayout) findViewById(R.id.llmaterias);
         tvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
         btnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
@@ -164,10 +164,7 @@ public class WelcomeActivity extends Activity {
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            arrLinMaterias.remove(currentSelected);
-                            llMaterias.removeView(currentSelected);
-                            sqlHelper.remove(currentSelected.getData().getSqlID());
-                            updateTotal();
+                            animateSubjectOut(currentSelected);
                         }
                     })
                     .setNegativeButton("Não", null);
@@ -185,6 +182,62 @@ public class WelcomeActivity extends Activity {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    private void animateSubjectOut(final LinMateria materia) {
+        final List<LinMateria> toBeAnimated = new ArrayList<LinMateria>();
+        boolean after = false;
+        for (LinMateria mtr : arrLinMaterias) {
+            if (after)
+                toBeAnimated.add(mtr);
+            if (mtr == materia)
+                after = true;
+        }
+
+        float finalTranslate = (Math.random() > 0.5 ? -1 : 1) *
+            getWindowManager().getDefaultDisplay().getWidth();
+        ObjectAnimator removedAnimator = ObjectAnimator.ofFloat(materia,
+            "translationX", finalTranslate);
+        removedAnimator.setDuration(500);
+        removedAnimator.setInterpolator(new DecelerateInterpolator(1.2f));
+
+        ValueAnimator listAnimator = ValueAnimator.ofFloat(0, -materia.getHeight());
+        listAnimator.setInterpolator(new DecelerateInterpolator(3.2f));
+        listAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                Float value = (Float) animation.getAnimatedValue();
+                int size = toBeAnimated.size();
+                for (int i = 0; i < size; i++)
+                    ViewHelper.setTranslationY(toBeAnimated.get(i), value);
+                ViewHelper.setTranslationY(btnAdicionar, value);
+            }
+        });
+        listAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                arrLinMaterias.remove(materia);
+                llMaterias.removeView(materia);
+                sqlHelper.remove(materia.getData().getSqlID());
+                updateTotal();
+                for (LinMateria mtr : toBeAnimated)
+                    ViewHelper.setTranslationY(mtr, 0);
+                ViewHelper.setTranslationY(btnAdicionar, 0);
+            }
+        });
+        listAnimator.setDuration(700);
+
+        AnimatorSet set = new AnimatorSet();
+        int maxScroll = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
+        if (maxScroll < scrollView.getScrollY() + materia.getHeight()) {
+            int scrollTo = Math.max(maxScroll - materia.getHeight(), 0);
+            Animator scrollAnimator = ObjectAnimator.ofInt(scrollView, "scrollY", scrollTo);
+            scrollAnimator.setInterpolator(listAnimator.getInterpolator());
+            scrollAnimator.setDuration(listAnimator.getDuration());
+            set.play(listAnimator).with(scrollAnimator);
+        }
+        set.play(listAnimator).after(removedAnimator);
+        set.start();
     }
 
     private AlertDialog createEditSubjectDialog(LinMateria materia, Runnable success) {
