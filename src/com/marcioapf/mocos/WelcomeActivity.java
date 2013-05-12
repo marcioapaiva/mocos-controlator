@@ -13,11 +13,17 @@ import android.os.Bundle;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.view.ViewHelper;
 
 public class WelcomeActivity extends Activity {
 	
@@ -52,14 +58,36 @@ public class WelcomeActivity extends Activity {
 		btnAdicionar.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				final LinMateria materia = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
-				createEditSubjectDialog(materia, new Runnable() {
+
+                final ObjectAnimator btnAnimator = ObjectAnimator.ofFloat(btnAdicionar, "alpha", 0);
+                btnAnimator.setDuration(500);
+                btnAnimator.start();
+                createEditSubjectDialog(materia, new Runnable() {
 				    @Override
 				    public void run() {
 				        arrLinMaterias.add(materia);
 				        llMaterias.addView(materia);
 				        sqlHelper.insertAndID(materia.getData());
+                        int initTranslation = (Math.random() > 0.5 ? -1 : 1) *
+                            getWindowManager().getDefaultDisplay().getWidth();
+                        ViewHelper.setTranslationX(materia, initTranslation);
+                        Animator mtrAnimator = ObjectAnimator.ofFloat(materia, "translationX", 0);
+                        mtrAnimator.setDuration(800);
+                        mtrAnimator.setInterpolator(new DecelerateInterpolator(3.2f));
+                        btnAnimator.setFloatValues(1);
+                        
+                        AnimatorSet set = new AnimatorSet();
+                        set.play(mtrAnimator).after(700);
+                        set.play(btnAnimator).after(1100);
+                        set.start();
 				    }
-				}).show();
+				}, new Runnable() {
+                        @Override
+                        public void run() {
+                            btnAnimator.setFloatValues(1);
+                            btnAnimator.start();
+                        }
+                    }).show();
 				updateTotal();
 			}
 		});
@@ -159,7 +187,13 @@ public class WelcomeActivity extends Activity {
         }
     }
 
-    private AlertDialog createEditSubjectDialog(final LinMateria materia, final Runnable success) {
+    private AlertDialog createEditSubjectDialog(LinMateria materia, Runnable success) {
+        return createEditSubjectDialog(materia, success, null);
+    }
+
+    private AlertDialog createEditSubjectDialog(final LinMateria materia,
+                                                final Runnable success,
+                                                final Runnable failure) {
         View dialogContent = View.inflate(this, R.layout.edit_dialog, null);
         final TextView etNomeMateria = (TextView) dialogContent
                 .findViewById(R.id.nome_materia);
@@ -179,14 +213,26 @@ public class WelcomeActivity extends Activity {
                     materia.setAulasSemanais(
                         Integer.parseInt(etAulasSemanais.getText().toString()));
                     materia.update();
-                    if (success != null) {
+                    if (success != null)
                         success.run();
-                    }
                 }
             })
-            .setNegativeButton("Cancelar", null);
+            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (failure != null)
+                        failure.run();
+                }
+            });
 
         AlertDialog dialog = builder.create();
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if (failure != null)
+                    failure.run();
+            }
+        });
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
