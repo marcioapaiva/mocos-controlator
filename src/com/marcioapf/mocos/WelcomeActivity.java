@@ -201,7 +201,12 @@ public class WelcomeActivity extends Activity {
         removedAnimator.setDuration(500);
         removedAnimator.setInterpolator(new DecelerateInterpolator(1.2f));
 
-        ValueAnimator listAnimator = ValueAnimator.ofFloat(0, -materia.getHeight());
+        int maxScroll = scrollView.getChildAt(0).getHeight() - scrollView.getHeight(),
+            materiaHeight = materia.getHeight();
+        final int initScroll = scrollView.getScrollY(),
+                  scrollBy = ((maxScroll < initScroll + materiaHeight) ?
+                      Math.max(maxScroll - materiaHeight, 0) : initScroll) - initScroll;
+        ValueAnimator listAnimator = ValueAnimator.ofFloat(0, -materiaHeight);
         listAnimator.setInterpolator(new DecelerateInterpolator(3.2f));
         listAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -211,6 +216,8 @@ public class WelcomeActivity extends Activity {
                 for (int i = 0; i < size; i++)
                     ViewHelper.setTranslationY(toBeAnimated.get(i), value);
                 ViewHelper.setTranslationY(btnAdicionar, value);
+                ViewHelper.setScrollY(scrollView,
+                    (int) (initScroll + scrollBy * animation.getAnimatedFraction()));
             }
         });
         listAnimator.addListener(new AnimatorListenerAdapter() {
@@ -220,22 +227,23 @@ public class WelcomeActivity extends Activity {
                 llMaterias.removeView(materia);
                 sqlHelper.remove(materia.getData().getSqlID());
                 updateTotal();
+                scrollView.setVerticalScrollBarEnabled(true);
+                scrollView.setOnTouchListener(null);
                 for (LinMateria mtr : toBeAnimated)
                     ViewHelper.setTranslationY(mtr, 0);
                 ViewHelper.setTranslationY(btnAdicionar, 0);
             }
         });
         listAnimator.setDuration(700);
+        scrollView.setVerticalScrollBarEnabled(false);
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        }); //disable user scrolling during the animation
 
         AnimatorSet set = new AnimatorSet();
-        int maxScroll = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
-        if (maxScroll < scrollView.getScrollY() + materia.getHeight()) {
-            int scrollTo = Math.max(maxScroll - materia.getHeight(), 0);
-            Animator scrollAnimator = ObjectAnimator.ofInt(scrollView, "scrollY", scrollTo);
-            scrollAnimator.setInterpolator(listAnimator.getInterpolator());
-            scrollAnimator.setDuration(listAnimator.getDuration());
-            set.play(listAnimator).with(scrollAnimator);
-        }
         set.play(listAnimator).after(removedAnimator);
         set.start();
     }
