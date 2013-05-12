@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.marcioapf.mocos.animation.AnimatorCreationUtil;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -141,12 +142,14 @@ public class LinMateria extends LinearLayout {
             anmtr.start();
         }
 
-        if(2*(int)Math.ceil(0.15f*16*data.getAulasSemanais()) - data.getAtrasos() <= 4){
-            tvFaltas.setTextColor(Color.RED);
-            tvMateria.setTextColor(Color.RED);
-        } else {
-            tvFaltas.setTextColor(Color.DKGRAY);
-            tvMateria.setTextColor(Color.DKGRAY);
+        if(2*(int)Math.ceil(0.15f*16*data.getAulasSemanais()) - data.getAtrasos() <= 4) {
+            if (tvFaltas.getCurrentTextColor() != Color.RED) {
+                AnimatorCreationUtil.ofTextColor(new TextView[]{tvFaltas, tvMateria},
+                    300, Color.RED).start();
+            }
+        } else if (tvFaltas.getCurrentTextColor() != Color.DKGRAY) {
+            AnimatorCreationUtil.ofTextColor(new TextView[]{tvFaltas, tvMateria},
+                300, Color.DKGRAY).start();
         }
         System.out.println("updated");
 

@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.animation.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import com.marcioapf.mocos.animation.AnimatorCreationUtil;
 import com.nineoldandroids.animation.*;
 import com.nineoldandroids.util.Property;
 import com.nineoldandroids.view.ViewHelper;
@@ -68,9 +69,8 @@ public class WelcomeActivity extends Activity {
 				        sqlHelper.insertAndID(materia.getData());
                         int initTranslation = - getWindowManager().getDefaultDisplay().getWidth();
                         ViewHelper.setTranslationX(materia, initTranslation);
-                        Animator mtrAnimator = ObjectAnimator.ofFloat(materia, "translationX", 0);
-                        mtrAnimator.setDuration(800);
-                        mtrAnimator.setInterpolator(new DecelerateInterpolator(3.2f));
+                        Animator mtrAnimator = AnimatorCreationUtil.ofFloat(materia, "translationX",
+                            800, new DecelerateInterpolator(3.2f), 0);
                         btnAnimator.setFloatValues(1);
                         
                         AnimatorSet set = new AnimatorSet();
@@ -114,11 +114,13 @@ public class WelcomeActivity extends Activity {
     		totalAtrasos += materia.getAtrasos();
     	}
 
-    	if((int)(2*Math.ceil((float)0.10f*16*totalAulasSemanais)) - totalAtrasos <= 0.2f*(int)Math.ceil((float)0.10f*16*totalAulasSemanais)){
-    		tvFaltasTotais.setTextColor(Color.RED);
+    	if((int)(2*Math.ceil((float)0.10f*16*totalAulasSemanais)) - totalAtrasos <= 0.2f*(int)Math.ceil((float)0.10f*16*totalAulasSemanais)) {
+            if (tvFaltasTotais.getCurrentTextColor() != Color.RED){
+    		    AnimatorCreationUtil.ofTextColor(tvFaltasTotais, 300, Color.RED).start();
+            }
     	}
-    	else {
-    		tvFaltasTotais.setTextColor(Color.DKGRAY);
+    	else if (tvFaltasTotais.getCurrentTextColor() != Color.DKGRAY) {
+            AnimatorCreationUtil.ofTextColor(tvFaltasTotais, 300, Color.DKGRAY).start();
     	}
 
     	tvFaltasTotais.setText("Total: " + (float)totalAtrasos/2 + "/" + ((int)Math.ceil((float)0.10f*16*totalAulasSemanais)));
@@ -199,17 +201,16 @@ public class WelcomeActivity extends Activity {
         Interpolator interpolator = new DecelerateInterpolator();
         int size = arrLinMaterias.size();
         for (int i = 0; i < size; i++) {
-            Animator anmtr = ObjectAnimator.ofFloat(arrLinMaterias.get(i), "translationX", translationX);
-            anmtr.setInterpolator(interpolator);
-            anmtr.setDuration(cardOutDuration);
+            Animator anmtr = AnimatorCreationUtil.ofFloat(arrLinMaterias.get(i), "translationX",
+                cardOutDuration, interpolator, translationX);
             animatorSet.play(anmtr).after(betweenCardsDelay * i);
         }
         int halfDuration = (cardOutDuration + betweenCardsDelay * (size - 1)) / 2;
-        Animator anmtr = ObjectAnimator.ofFloat(btnAdicionar, "alpha", alpha);
-        anmtr.setDuration(halfDuration);
+        Animator anmtr = AnimatorCreationUtil.ofFloat(btnAdicionar, "alpha", halfDuration, null,
+            alpha);
         animatorSet.play(anmtr).after(halfDuration);
-        anmtr = ObjectAnimator.ofFloat(tvFaltasTotais, "alpha", alpha);
-        anmtr.setDuration(halfDuration);
+
+        anmtr = AnimatorCreationUtil.ofFloat(tvFaltasTotais, "alpha", halfDuration, null, alpha);
         animatorSet.play(anmtr).after(halfDuration);
 
         return animatorSet;
@@ -226,10 +227,8 @@ public class WelcomeActivity extends Activity {
         }
 
         float finalTranslate = getWindowManager().getDefaultDisplay().getWidth();
-        ObjectAnimator removedAnimator = ObjectAnimator.ofFloat(materia,
-            "translationX", finalTranslate);
-        removedAnimator.setDuration(500);
-        removedAnimator.setInterpolator(new DecelerateInterpolator(1.2f));
+        ObjectAnimator removedAnimator = AnimatorCreationUtil.ofFloat(materia, "translationX",
+            500, new DecelerateInterpolator(1.2f), finalTranslate);
 
         int maxScroll = scrollView.getChildAt(0).getHeight() - scrollView.getHeight(),
             materiaHeight = materia.getHeight();
