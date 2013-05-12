@@ -68,8 +68,7 @@ public class WelcomeActivity extends Activity {
 				        arrLinMaterias.add(materia);
 				        llMaterias.addView(materia);
 				        sqlHelper.insertAndID(materia.getData());
-                        int initTranslation = (Math.random() > 0.5 ? -1 : 1) *
-                            getWindowManager().getDefaultDisplay().getWidth();
+                        int initTranslation = - getWindowManager().getDefaultDisplay().getWidth();
                         ViewHelper.setTranslationX(materia, initTranslation);
                         Animator mtrAnimator = ObjectAnimator.ofFloat(materia, "translationX", 0);
                         mtrAnimator.setDuration(800);
@@ -194,8 +193,7 @@ public class WelcomeActivity extends Activity {
                 after = true;
         }
 
-        float finalTranslate = (Math.random() > 0.5 ? -1 : 1) *
-            getWindowManager().getDefaultDisplay().getWidth();
+        float finalTranslate = getWindowManager().getDefaultDisplay().getWidth();
         ObjectAnimator removedAnimator = ObjectAnimator.ofFloat(materia,
             "translationX", finalTranslate);
         removedAnimator.setDuration(500);
