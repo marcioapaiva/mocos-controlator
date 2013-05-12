@@ -64,7 +64,8 @@
                     android:text="(!)"
                     android:textSize="22sp"
                     android:textColor="#C0C0C000"
-                    android:id="@+id/cb_checked"/>
+                    android:id="@+id/cb_checked"
+                    android:visibility="invisible"/>
         </LinearLayout>
     </LinearLayout>
 

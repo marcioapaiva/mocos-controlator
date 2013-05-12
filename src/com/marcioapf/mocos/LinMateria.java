@@ -13,6 +13,10 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.view.ViewHelper;
 
 @SuppressLint("ViewConstructor")
 public class LinMateria extends LinearLayout {
@@ -69,7 +73,7 @@ public class LinMateria extends LinearLayout {
         cbChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
-                    handlerTimer.postDelayed(timerHelper, 3000);
+                    handlerTimer.postDelayed(timerHelper, 2000);
 
                     data.setCheckNeeded(false);
                     System.out.println("is checked");
@@ -126,12 +130,25 @@ public class LinMateria extends LinearLayout {
         System.out.println("updated");
 
         if(data.isCheckNeeded()){
-            cbChecked.setVisibility(VISIBLE);
-            cbChecked.setChecked(false);
+            if (cbChecked.getVisibility() != VISIBLE) {
+                cbChecked.setVisibility(VISIBLE);
+                cbChecked.setChecked(false);
+                Animator animator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0, 1);
+                animator.setDuration(500);
+                animator.start();
+            }
         }
-        else {
-            cbChecked.setVisibility(INVISIBLE);
-            cbChecked.setChecked(true);
+        else if (cbChecked.getVisibility() != INVISIBLE) {
+            Animator animator = ObjectAnimator.ofFloat(cbChecked, "alpha", 1, 0);
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    cbChecked.setVisibility(INVISIBLE);
+                    cbChecked.setChecked(true);
+                }
+            });
+            animator.setDuration(300);
+            animator.start();
         }
     }
 
