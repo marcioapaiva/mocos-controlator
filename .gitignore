@@ -25,7 +25,6 @@ local.properties
 out/
 .idea/
 *.eml
-*.iml
 
 # External tool builders
 .externalToolBuilders/
