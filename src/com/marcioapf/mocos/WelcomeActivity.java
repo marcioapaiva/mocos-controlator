@@ -194,21 +194,23 @@ public class WelcomeActivity extends Activity {
     }
 
     private AnimatorSet animateAll(float alpha, float... translationX) {
+        final int cardOutDuration = 200, betweenCardsDelay = 80;
         AnimatorSet animatorSet = new AnimatorSet();
         Interpolator interpolator = new DecelerateInterpolator();
         int size = arrLinMaterias.size();
         for (int i = 0; i < size; i++) {
             Animator anmtr = ObjectAnimator.ofFloat(arrLinMaterias.get(i), "translationX", translationX);
             anmtr.setInterpolator(interpolator);
-            anmtr.setDuration(200);
-            animatorSet.play(anmtr).after(80 * i);
+            anmtr.setDuration(cardOutDuration);
+            animatorSet.play(anmtr).after(betweenCardsDelay * i);
         }
+        int halfDuration = (cardOutDuration + betweenCardsDelay * (size - 1)) / 2;
         Animator anmtr = ObjectAnimator.ofFloat(btnAdicionar, "alpha", alpha);
-        anmtr.setDuration(100 + 40 * size);
-        animatorSet.play(anmtr);
+        anmtr.setDuration(halfDuration);
+        animatorSet.play(anmtr).after(halfDuration);
         anmtr = ObjectAnimator.ofFloat(tvFaltasTotais, "alpha", alpha);
-        anmtr.setDuration(100 + 40 * size);
-        animatorSet.play(anmtr);
+        anmtr.setDuration(halfDuration);
+        animatorSet.play(anmtr).after(halfDuration);
 
         return animatorSet;
     }
