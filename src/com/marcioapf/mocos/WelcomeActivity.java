@@ -14,9 +14,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.nineoldandroids.animation.*;
@@ -181,6 +179,38 @@ public class WelcomeActivity extends Activity {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        AnimatorSet animatorSet = animateAll(0, getWindowManager().getDefaultDisplay().getWidth());
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animateAll(1, -getWindowManager().getDefaultDisplay().getWidth(), 0).start();
+            }
+        });
+        animatorSet.start();
+    }
+
+    private AnimatorSet animateAll(float alpha, float... translationX) {
+        AnimatorSet animatorSet = new AnimatorSet();
+        Interpolator interpolator = new DecelerateInterpolator();
+        int size = arrLinMaterias.size();
+        for (int i = 0; i < size; i++) {
+            Animator anmtr = ObjectAnimator.ofFloat(arrLinMaterias.get(i), "translationX", translationX);
+            anmtr.setInterpolator(interpolator);
+            anmtr.setDuration(200);
+            animatorSet.play(anmtr).after(80 * i);
+        }
+        Animator anmtr = ObjectAnimator.ofFloat(btnAdicionar, "alpha", alpha);
+        anmtr.setDuration(100 + 40 * size);
+        animatorSet.play(anmtr);
+        anmtr = ObjectAnimator.ofFloat(tvFaltasTotais, "alpha", alpha);
+        anmtr.setDuration(100 + 40 * size);
+        animatorSet.play(anmtr);
+
+        return animatorSet;
     }
 
     private void animateSubjectOut(final LinMateria materia) {
