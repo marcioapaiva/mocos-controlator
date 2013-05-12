@@ -114,12 +114,7 @@ public class WelcomeActivity extends Activity {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
-        for (LinMateria lm : arrLinMaterias){
-        	if(lm.getMateriaTextView() == v) {
-        		selected = lm;
-        		break;
-        	}
-        }
+        selected = (LinMateria) v;
     }
 
     @Override

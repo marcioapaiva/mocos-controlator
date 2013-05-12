@@ -58,6 +58,7 @@ public class LinMateria extends LinearLayout {
         data.setAtrasos(0);
         data.setCheckNeeded(checkNeeded);
 
+        ((Activity)context).registerForContextMenu(this);
         configureViews();
         update();
     }
@@ -80,8 +81,6 @@ public class LinMateria extends LinearLayout {
                 }
             }
         });
-
-        ((Activity)getContext()).registerForContextMenu(tvMateria);
 
         OnClickListener buttonListener = new OnClickListener() {
             public void onClick(View v){
@@ -164,10 +163,6 @@ public class LinMateria extends LinearLayout {
 
     public MateriaData getData() {
         return data;
-    }
-
-    public TextView getMateriaTextView() {
-        return tvMateria;
     }
 
     public int getAulasSemanais() {
