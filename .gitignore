@@ -3,7 +3,6 @@
 #################
 
 *.pydevproject
-.project
 .metadata
 bin/
 tmp/
@@ -17,6 +16,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+project.properties
 
 #################
 ## IntelliJ
