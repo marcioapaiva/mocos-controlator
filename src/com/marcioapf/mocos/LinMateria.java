@@ -15,7 +15,6 @@ import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.util.IntProperty;
-import com.nineoldandroids.util.Property;
 import com.nineoldandroids.view.ViewHelper;
 
 @SuppressLint("ViewConstructor")
@@ -27,9 +26,9 @@ public class LinMateria extends LinearLayout {
     private final Button btnAddAtraso, btnRemAtraso, btnAddFalta, btnRemFalta;
     private final TextView tvFaltas;
 
-    private final ObjectAnimator textColorAnimator;
-    private final ObjectAnimator progressBarAnimator;
-    private final ObjectAnimator checkBoxAlphaAnimator;
+    private ObjectAnimator textColorAnimator;
+    private ObjectAnimator progressBarAnimator;
+    private ObjectAnimator checkBoxAlphaAnimator;
 
     private final IntProperty<ProgressBar> progressProperty = new IntProperty<ProgressBar>("progress") {
         @Override
@@ -71,23 +70,6 @@ public class LinMateria extends LinearLayout {
         btnAddAtraso = getView(R.id.add_atraso);
         btnAddFalta = getView(R.id.add_falta);
 
-        // animators
-        textColorAnimator = AnimatorCreationUtil.ofTextColor(
-            new TextView[]{tvFaltas, tvMateria}, 300, Color.DKGRAY);
-        progressBarAnimator = ObjectAnimator.ofInt(pBarFaltas, progressProperty, 0);
-        progressBarAnimator.setInterpolator(accDeccInterpolator);
-        progressBarAnimator.setDuration(120);
-        checkBoxAlphaAnimator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0);
-        checkBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (!data.isCheckNeeded()) {
-                    cbChecked.setVisibility(INVISIBLE);
-                    cbChecked.setChecked(true);
-                }
-            }
-        });
-
         data = new MateriaData();
 
         this.setStrNome(strMateria);
@@ -97,6 +79,9 @@ public class LinMateria extends LinearLayout {
 
         ((Activity)context).registerForContextMenu(this);
         configureViews();
+        gestureDetector = new GestureDetector(context, new MateriaGestureListener());
+        mViewConfiguration = ViewConfiguration.get(context);
+
         update();
     }
 
@@ -145,6 +130,24 @@ public class LinMateria extends LinearLayout {
         btnRemAtraso.setOnClickListener(buttonListener);
         btnRemFalta.setOnClickListener(buttonListener);
         btnAddFalta.setOnClickListener(buttonListener);
+    }
+
+    private void configureAnimators() {
+        textColorAnimator = AnimatorCreationUtil.ofTextColor(
+            new TextView[]{tvFaltas, tvMateria}, 300, Color.DKGRAY);
+        progressBarAnimator = ObjectAnimator.ofInt(pBarFaltas, progressProperty, 0);
+        progressBarAnimator.setInterpolator(accDeccInterpolator);
+        progressBarAnimator.setDuration(120);
+        checkBoxAlphaAnimator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0);
+        checkBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!data.isCheckNeeded()) {
+                    cbChecked.setVisibility(INVISIBLE);
+                    cbChecked.setChecked(true);
+                }
+            }
+        });
     }
 
     public void update() {
