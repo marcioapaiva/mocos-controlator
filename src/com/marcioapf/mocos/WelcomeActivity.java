@@ -1,8 +1,5 @@
 package com.marcioapf.mocos;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,13 +11,19 @@ import android.os.Bundle;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.view.animation.*;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
 import com.nineoldandroids.animation.*;
-import com.nineoldandroids.util.Property;
 import com.nineoldandroids.view.ViewHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WelcomeActivity extends Activity {
 
@@ -216,7 +219,7 @@ public class WelcomeActivity extends Activity {
         return animatorSet;
     }
 
-    private void animateSubjectOut(final LinMateria materia) {
+    public void animateSubjectOut(final LinMateria materia) {
         final List<LinMateria> toBeAnimated = new ArrayList<LinMateria>();
         boolean after = false;
         for (LinMateria mtr : arrLinMaterias) {
@@ -226,9 +229,12 @@ public class WelcomeActivity extends Activity {
                 after = true;
         }
 
-        float finalTranslate = getWindowManager().getDefaultDisplay().getWidth();
-        ObjectAnimator removedAnimator = AnimatorCreationUtil.ofFloat(materia, "translationX",
-            500, new DecelerateInterpolator(1.2f), finalTranslate);
+        ObjectAnimator removedAnimator = null;
+        if (ViewHelper.getTranslationX(materia) == 0) {
+            float finalTranslate = getWindowManager().getDefaultDisplay().getWidth();
+            removedAnimator = AnimatorCreationUtil.ofFloat(materia, "translationX", 500,
+                new DecelerateInterpolator(1.2f), finalTranslate);
+        }
 
         int maxScroll = scrollView.getChildAt(0).getHeight() - scrollView.getHeight(),
             materiaHeight = materia.getHeight();
@@ -272,9 +278,12 @@ public class WelcomeActivity extends Activity {
             }
         }); //disable user scrolling during the animation
 
-        AnimatorSet set = new AnimatorSet();
-        set.play(listAnimator).after(removedAnimator);
-        set.start();
+        if (removedAnimator != null) {
+            AnimatorSet set = new AnimatorSet();
+            set.play(listAnimator).after(removedAnimator);
+            set.start();
+        } else
+            listAnimator.start();
     }
 
     private AlertDialog createEditSubjectDialog(LinMateria materia, Runnable success) {
