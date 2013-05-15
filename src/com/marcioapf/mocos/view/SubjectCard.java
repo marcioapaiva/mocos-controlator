@@ -82,7 +82,7 @@ public class SubjectCard extends LinearLayout {
     public SubjectCard(Context context, SubjectData subjectData){
         this(context, subjectData.getName(),
             subjectData.getWeeklyClasses(), subjectData.isCheckNeeded());
-        setAtrasos(subjectData.getDelays());
+        setDelays(subjectData.getDelays());
         getData().setSqlID(subjectData.getSqlID());
 
         update();
@@ -109,7 +109,7 @@ public class SubjectCard extends LinearLayout {
         ((Activity)context).registerForContextMenu(this);
         configureViews();
         configureAnimators();
-        MateriaGestureListener gestureListener = new MateriaGestureListener();
+        SubjectGestureListener gestureListener = new SubjectGestureListener();
         mGestureDetector = new GestureDetector(context, gestureListener);
         mViewConfiguration = ViewConfiguration.get(context);
         setOnLongClickListener(gestureListener); // we have to set this to manually show the context
@@ -141,17 +141,17 @@ public class SubjectCard extends LinearLayout {
                 switch (v.getId()) {
                     case R.id.rem_falta:
                         if(mData.getDelays()>=2)
-                            setAtrasos(mData.getDelays()-2);
+                            setDelays(mData.getDelays() - 2);
                         break;
                     case R.id.rem_atraso:
                         if(mData.getDelays()>=1)
-                            setAtrasos(mData.getDelays()-1);
+                            setDelays(mData.getDelays() - 1);
                         break;
                     case R.id.add_atraso:
-                        setAtrasos(mData.getDelays()+1);
+                        setDelays(mData.getDelays() + 1);
                         break;
                     case R.id.add_falta:
-                        setAtrasos(mData.getDelays()+2);
+                        setDelays(mData.getDelays() + 2);
                         break;
                 }
                 update();
@@ -288,16 +288,16 @@ public class SubjectCard extends LinearLayout {
         this.getData().setCheckNeeded(checkNeeded);
     }
 
-    public void setAtrasos(int atrasos) {
+    public void setDelays(int atrasos) {
         mData.setDelays(atrasos);
         update();
     }
 
-    public int getAtrasos(){
+    public int getDelays(){
         return mData.getDelays();
     }
 
-    public String getStrNome(){
+    public String getSubjectName(){
         return mData.getName();
     }
 
@@ -310,19 +310,19 @@ public class SubjectCard extends LinearLayout {
         return mData;
     }
 
-    public int getAulasSemanais() {
+    public int getWeeklyClasses() {
         return mData.getWeeklyClasses();
     }
 
-    public void setAulasSemanais(int aulasSemanais) {
-        mData.setWeeklyClasses(aulasSemanais);
+    public void setWeeklyClasses(int weeklyClasses) {
+        mData.setWeeklyClasses(weeklyClasses);
     }
 
     public <Type extends View> Type getView(int id) {
         return (Type)findViewById(id);
     }
 
-    private class MateriaGestureListener
+    private class SubjectGestureListener
             extends GestureDetector.SimpleOnGestureListener implements OnLongClickListener {
         private boolean mIsDragging;
         private boolean mIgnoreTouch;
@@ -379,7 +379,7 @@ public class SubjectCard extends LinearLayout {
                     public void run() {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                         builder.setTitle("Remover")
-                            .setMessage("Tem certeza que deseja remover \"" + getStrNome() + "\"?")
+                            .setMessage("Tem certeza que deseja remover \"" + getSubjectName() + "\"?")
                             .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
