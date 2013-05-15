@@ -111,8 +111,8 @@ public class AbsenceActivity extends Activity {
     	mTotalDelays = 0;
 
     	for (SubjectCard materia : mSubjectCards){
-    		mTotalWeeklyClasses += materia.getWeeklyClasses();
-    		mTotalDelays += materia.getDelays();
+    		mTotalWeeklyClasses += materia.getAulasSemanais();
+    		mTotalDelays += materia.getAtrasos();
     	}
 
     	if((int)(2*Math.ceil((float)0.10f*16* mTotalWeeklyClasses)) - mTotalDelays <=
@@ -163,7 +163,7 @@ public class AbsenceActivity extends Activity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Remover")
                     .setMessage("Tem certeza que deseja remover \"" +
-                        mSelectedSubject.getSubjectName() +"\"?")
+                        mSelectedSubject.getStrNome() +"\"?")
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -295,8 +295,8 @@ public class AbsenceActivity extends Activity {
         final TextView etAulasSemanais = (TextView) dialogContent
                 .findViewById(R.id.maximo_atrasos);
 
-        etNomeMateria.setText(materia.getSubjectName());
-        etAulasSemanais.setText(Integer.toString(materia.getWeeklyClasses()));
+        etNomeMateria.setText(materia.getStrNome());
+        etAulasSemanais.setText(Integer.toString(materia.getAulasSemanais()));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Edição de Matéria")
@@ -305,7 +305,7 @@ public class AbsenceActivity extends Activity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     materia.setSubjectName(etNomeMateria.getText().toString());
-                    materia.setWeeklyClasses(
+                    materia.setAulasSemanais(
                         Integer.parseInt(etAulasSemanais.getText().toString()));
                     materia.update();
                     if (success != null)
