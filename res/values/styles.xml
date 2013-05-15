@@ -3,7 +3,7 @@
     <style name="EditSubjectStyle">
         <item name="android:background">@drawable/edit_subject_background_color</item>
         <item name="android:textColor">@color/edit_subject_text_color</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
     <style name="ProgressBarStyle" parent="@android:style/Widget.ProgressBar.Horizontal"/>
     <style name="ApplicationTheme" parent="@android:style/Theme.Light"/>

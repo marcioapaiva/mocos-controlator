@@ -4,6 +4,7 @@ import android.view.animation.Interpolator;
 import android.widget.TextView;
 import com.nineoldandroids.animation.ArgbEvaluator;
 import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.util.Property;
 
@@ -26,11 +27,21 @@ public class AnimatorCreationUtil {
     private static final TypeEvaluator argEvaluator = new ArgbEvaluator();
 
     public static ObjectAnimator ofFloat(Object object,
-                                               String propertyName,
-                                               long duration,
-                                               Interpolator interpolator,
-                                               float... values) {
+                                         String propertyName,
+                                         long duration,
+                                         Interpolator interpolator,
+                                         float... values) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(object, propertyName, values);
+        animator.setDuration(duration);
+        animator.setInterpolator(interpolator);
+        return animator;
+    }
+
+    public static ObjectAnimator ofPropertyValuesHolder(Object object,
+                                                        long duration,
+                                                        Interpolator interpolator,
+                                                        PropertyValuesHolder... values) {
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(object, values);
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);
         return animator;
