@@ -100,8 +100,8 @@ public class SwipeableViewDelegate {
             mIsDragging =  mIsDragging || Math.abs(e2.getX() - e1.getX()) > mTouchSlope;
             if (oldValue ^ mIsDragging) {
                 mView.getParent().requestDisallowInterceptTouchEvent(true);
-                e2.setAction(MotionEvent.ACTION_CANCEL); // so that when the event reaches the super
-                                                         // it cancels anything that was being done
+                if (mListener != null)
+                    mListener.onStartTracking(e2);
             }
             if (mIsDragging) {
                 mTranslationAnimator.cancel();
@@ -139,6 +139,8 @@ public class SwipeableViewDelegate {
 
     public interface OnSwipeListener {
         void onSwipeOut();
+
+        void onStartTracking(MotionEvent event);
 
         void onSwipeBack();
     }
