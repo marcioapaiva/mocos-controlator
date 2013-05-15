@@ -18,9 +18,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
-import com.marcioapf.mocos.data.MateriaData;
+import com.marcioapf.mocos.data.SubjectData;
 import com.marcioapf.mocos.data.SQLHelper;
-import com.marcioapf.mocos.view.LinMateria;
+import com.marcioapf.mocos.view.SubjectCard;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -33,15 +33,15 @@ import java.util.List;
 public class AbsenceActivity extends Activity {
 
     private ScrollView mScrollView;
-    private LinearLayout mLlMaterias;
-    private Button mBtnAdicionar;
-    private LinMateria mSelected = null;
-    private TextView mTvFaltasTotais;
+    private LinearLayout mSubjectsLayout;
+    private Button mAddButton;
+    private SubjectCard mSelectedSubject = null;
+    private TextView mTotalAbsencesTextView;
 
-    private ArrayList<LinMateria> mLinMaterias;
+    private ArrayList<SubjectCard> mSubjectCards;
 
-    private int mTotalAulasSemanais = 0;
-    private int mTotalAtrasos = 0;
+    private int mTotalWeeklyClasses = 0;
+    private int mTotalDelays = 0;
 
     private SQLHelper mSqlHelper;
 	
@@ -54,25 +54,25 @@ public class AbsenceActivity extends Activity {
         setContentView(R.layout.main);
 
         mScrollView = (ScrollView) findViewById(R.id.scrllvwNo1);
-        mLlMaterias = (LinearLayout) findViewById(R.id.llmaterias);
-        mTvFaltasTotais = (TextView) findViewById(R.id.tvFaltasTotais);
-        mBtnAdicionar = (Button) findViewById(R.id.btnNovaMateria);
+        mSubjectsLayout = (LinearLayout) findViewById(R.id.llmaterias);
+        mTotalAbsencesTextView = (TextView) findViewById(R.id.tvFaltasTotais);
+        mAddButton = (Button) findViewById(R.id.btnNovaMateria);
 
-		mBtnAdicionar.setOnClickListener(new OnClickListener() {
+		mAddButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                final LinMateria materia = new LinMateria(AbsenceActivity.this, "Nova", 4, false);
+                final SubjectCard materia = new SubjectCard(AbsenceActivity.this, "Nova", 4, false);
 
-                final ObjectAnimator btAnimator = ObjectAnimator.ofFloat(mBtnAdicionar, "alpha", 0);
+                final ObjectAnimator btAnimator = ObjectAnimator.ofFloat(mAddButton, "alpha", 0);
                 btAnimator.setDuration(500);
                 btAnimator.start();
                 createEditSubjectDialog(materia, new Runnable() {
                         @Override
                         public void run() {
-                            mLinMaterias.add(materia);
-                            mLlMaterias.addView(materia);
+                            mSubjectCards.add(materia);
+                            mSubjectsLayout.addView(materia);
                             mSqlHelper.insertAndID(materia.getData());
 
-                            ViewHelper.setTranslationX(materia, -mLlMaterias.getWidth());
+                            ViewHelper.setTranslationX(materia, -mSubjectsLayout.getWidth());
                             materia.animateToDelayed(0, 0, 700);
 
                             btAnimator.setFloatValues(1);
@@ -92,48 +92,48 @@ public class AbsenceActivity extends Activity {
         });
 
 
-    	mLinMaterias = new ArrayList<LinMateria>();
+    	mSubjectCards = new ArrayList<SubjectCard>();
 
-    	ArrayList<MateriaData> materiasData = mSqlHelper.retrieveAllMateriaData();
-    	for (MateriaData mData : materiasData){
-    		mLinMaterias.add(new LinMateria(this, mData));
+    	ArrayList<SubjectData> materiasData = mSqlHelper.retrieveAllMateriaData();
+    	for (SubjectData mData : materiasData){
+    		mSubjectCards.add(new SubjectCard(this, mData));
     	}
 
-        for (LinMateria lm : mLinMaterias)
-	        mLlMaterias.addView(lm);
+        for (SubjectCard lm : mSubjectCards)
+	        mSubjectsLayout.addView(lm);
 
         //Atualiza a contagem do total de faltas
         updateTotal();
     }
 
     public void updateTotal() {
-    	mTotalAulasSemanais = 0;
-    	mTotalAtrasos = 0;
+    	mTotalWeeklyClasses = 0;
+    	mTotalDelays = 0;
 
-    	for (LinMateria materia : mLinMaterias){
-    		mTotalAulasSemanais += materia.getAulasSemanais();
-    		mTotalAtrasos += materia.getAtrasos();
+    	for (SubjectCard materia : mSubjectCards){
+    		mTotalWeeklyClasses += materia.getAulasSemanais();
+    		mTotalDelays += materia.getAtrasos();
     	}
 
-    	if((int)(2*Math.ceil((float)0.10f*16* mTotalAulasSemanais)) - mTotalAtrasos <=
-                0.2f*(int)Math.ceil((float)0.10f*16* mTotalAulasSemanais)) {
-            if (mTvFaltasTotais.getCurrentTextColor() != Color.RED){
-    		    AnimatorCreationUtil.ofTextColor(mTvFaltasTotais, 300, Color.RED).start();
+    	if((int)(2*Math.ceil((float)0.10f*16* mTotalWeeklyClasses)) - mTotalDelays <=
+                0.2f*(int)Math.ceil((float)0.10f*16* mTotalWeeklyClasses)) {
+            if (mTotalAbsencesTextView.getCurrentTextColor() != Color.RED){
+    		    AnimatorCreationUtil.ofTextColor(mTotalAbsencesTextView, 300, Color.RED).start();
             }
     	}
-    	else if (mTvFaltasTotais.getCurrentTextColor() != Color.DKGRAY) {
-            AnimatorCreationUtil.ofTextColor(mTvFaltasTotais, 300, Color.DKGRAY).start();
+    	else if (mTotalAbsencesTextView.getCurrentTextColor() != Color.DKGRAY) {
+            AnimatorCreationUtil.ofTextColor(mTotalAbsencesTextView, 300, Color.DKGRAY).start();
     	}
 
-    	mTvFaltasTotais.setText("Total: " + (float) mTotalAtrasos / 2 + "/" +
-            ((int) Math.ceil((float) 0.10f * 16 * mTotalAulasSemanais)));
+    	mTotalAbsencesTextView.setText("Total: " + (float) mTotalDelays / 2 + "/" +
+            ((int) Math.ceil((float) 0.10f * 16 * mTotalWeeklyClasses)));
     }
 
     protected void onPause() {
     	super.onPause();
     	//Retirar somente a data de cada matéria
-    	ArrayList<MateriaData> materiasData = new ArrayList<MateriaData>();
-    	for (LinMateria lm : mLinMaterias){
+    	ArrayList<SubjectData> materiasData = new ArrayList<SubjectData>();
+    	for (SubjectCard lm : mSubjectCards){
     		materiasData.add(lm.getData());
     		mSqlHelper.update(lm.getData());
     	}
@@ -144,12 +144,12 @@ public class AbsenceActivity extends Activity {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
-        mSelected = (LinMateria) v;
+        mSelectedSubject = (SubjectCard) v;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        final LinMateria currentSelected = mSelected;
+        final SubjectCard currentSelected = mSelectedSubject;
         switch (item.getItemId()) {
             case R.id.edit:
                 createEditSubjectDialog(currentSelected, new Runnable() {
@@ -162,7 +162,8 @@ public class AbsenceActivity extends Activity {
             case R.id.remove:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Remover")
-                    .setMessage("Tem certeza que deseja remover \"" + mSelected.getStrNome() +"\"?")
+                    .setMessage("Tem certeza que deseja remover \"" +
+                        mSelectedSubject.getStrNome() +"\"?")
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -173,12 +174,12 @@ public class AbsenceActivity extends Activity {
                 builder.show();
                 return true;
             case R.id.check:
-                mSelected.setCheckNeeded(true);
-                mSelected.update();
+                mSelectedSubject.setCheckNeeded(true);
+                mSelectedSubject.update();
                 return true;
             case R.id.notas:
-                Intent intent = new Intent(this, NotasActivity.class);
-                intent.putExtra("MateriaID", mSelected.getData().getSqlID());
+                Intent intent = new Intent(this, GradesActivity.class);
+                intent.putExtra("MateriaID", mSelectedSubject.getData().getSqlID());
                 startActivity(intent);
                 return true;
             default:
@@ -193,7 +194,7 @@ public class AbsenceActivity extends Activity {
             public void run() {
                 AbsenceActivity.super.onBackPressed();
             }
-        }, animateAllTo(mLlMaterias.getWidth(), 0));
+        }, animateAllTo(mSubjectsLayout.getWidth(), 0));
     }
 
     /**
@@ -205,18 +206,18 @@ public class AbsenceActivity extends Activity {
      */
     private long animateAllTo(final float cardsTranslateX, float tvAndBtntAlpha) {
         final long betweenCardsDelay = 80;
-        int size = mLinMaterias.size();
+        int size = mSubjectCards.size();
 
         for (int i = 0; i < size; i++)
-            mLinMaterias.get(i).animateToDelayed(cardsTranslateX, 0, betweenCardsDelay * i);
+            mSubjectCards.get(i).animateToDelayed(cardsTranslateX, 0, betweenCardsDelay * i);
 
         long halfDuration = (betweenCardsDelay * size) / 2 + 120;
-        Animator anmtr = AnimatorCreationUtil.ofFloat(mBtnAdicionar, "alpha", halfDuration, null,
+        Animator anmtr = AnimatorCreationUtil.ofFloat(mAddButton, "alpha", halfDuration, null,
             tvAndBtntAlpha);
         anmtr.setStartDelay(halfDuration);
         anmtr.start();
 
-        anmtr = AnimatorCreationUtil.ofFloat(mTvFaltasTotais, "alpha", halfDuration, null,
+        anmtr = AnimatorCreationUtil.ofFloat(mTotalAbsencesTextView, "alpha", halfDuration, null,
             tvAndBtntAlpha);
         anmtr.setStartDelay(halfDuration);
         anmtr.start();
@@ -224,16 +225,16 @@ public class AbsenceActivity extends Activity {
         return 2 * halfDuration;
     }
 
-    public void animateSubjectOut(final LinMateria materia) {
+    public void animateSubjectOut(final SubjectCard materia) {
         final List<View> toBeAnimated = new ArrayList<View>();
         boolean after = false;
-        for (LinMateria mtr : mLinMaterias) {
+        for (SubjectCard mtr : mSubjectCards) {
             if (after)
                 toBeAnimated.add(mtr);
             if (mtr == materia)
                 after = true;
         }
-        toBeAnimated.add(mBtnAdicionar);
+        toBeAnimated.add(mAddButton);
         final int numberToBeAnimated = toBeAnimated.size();
 
         int maxScroll = mScrollView.getChildAt(0).getHeight() - mScrollView.getHeight(),
@@ -256,8 +257,8 @@ public class AbsenceActivity extends Activity {
         listAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLinMaterias.remove(materia);
-                mLlMaterias.removeView(materia);
+                mSubjectCards.remove(materia);
+                mSubjectsLayout.removeView(materia);
                 mSqlHelper.remove(materia.getData().getSqlID());
                 updateTotal();
                 mScrollView.setVerticalScrollBarEnabled(true);
@@ -276,16 +277,16 @@ public class AbsenceActivity extends Activity {
         }); //disable user scrolling during the animation
 
         if (ViewHelper.getTranslationX(materia) == 0)
-            materia.animateTo(mLlMaterias.getWidth(), 0);
+            materia.animateTo(mSubjectsLayout.getWidth(), 0);
         listAnimator.setStartDelay(500);
         listAnimator.start();
     }
 
-    private AlertDialog createEditSubjectDialog(LinMateria materia, Runnable success) {
+    private AlertDialog createEditSubjectDialog(SubjectCard materia, Runnable success) {
         return createEditSubjectDialog(materia, success, null);
     }
 
-    private AlertDialog createEditSubjectDialog(final LinMateria materia,
+    private AlertDialog createEditSubjectDialog(final SubjectCard materia,
                                                 final Runnable success,
                                                 final Runnable failure) {
         View dialogContent = View.inflate(this, R.layout.edit_dialog, null);
@@ -303,7 +304,7 @@ public class AbsenceActivity extends Activity {
             .setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    materia.setStrNome(etNomeMateria.getText().toString());
+                    materia.setSubjectName(etNomeMateria.getText().toString());
                     materia.setAulasSemanais(
                         Integer.parseInt(etAulasSemanais.getText().toString()));
                     materia.update();

@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.marcioapf.mocos.NotasActivity"
+            android:name=".GradesActivity"
             android:label="@string/title_activity_notas" >
         </activity>
     </application>
