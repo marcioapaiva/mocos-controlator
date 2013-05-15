@@ -231,12 +231,12 @@ public class SubjectCard extends LinearLayout {
             || super.onTouchEvent(event);
     }
 
-    public void animateTo(float finalPosition, float initVelocity) {
-       mSwipeDelegate.animateTo(finalPosition, initVelocity);
+    public void swipeRight(float initVelocity, long delay) {
+        mSwipeDelegate.swipeRight(initVelocity, delay);
     }
 
-    public void  animateToDelayed(float finalPosition, float initVelocity, long delay) {
-        mSwipeDelegate.animateToDelayed(finalPosition, initVelocity, delay);
+    public void swipeBack(float initVelocity, long delay) {
+        mSwipeDelegate.swipeRight(initVelocity, delay);
     }
 
     public boolean isCheckNeeded() {
@@ -300,13 +300,13 @@ public class SubjectCard extends LinearLayout {
                         .setNegativeButton("Não", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mSwipeDelegate.animateTo(0, 0);
+                                mSwipeDelegate.swipeBack(0);
                             }
                         });
                     builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                         @Override
                         public void onCancel(DialogInterface dialog) {
-                            mSwipeDelegate.animateTo(0, 0);
+                            mSwipeDelegate.swipeBack(0);
                         }
                     });
                     builder.show();

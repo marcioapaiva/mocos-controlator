@@ -44,8 +44,55 @@ public class SwipeableViewDelegate {
         return 1 - Math.abs(translation / ((View)mView.getParent()).getWidth());
     }
 
-    public void animateTo(float finalPosition, float initVelocity) {
-        animateToDelayed(finalPosition, initVelocity, 0);
+    /**
+     * Just like {@link SwipeableViewDelegate#swipeRight(float, long)} but start instantly instead.
+     * @param initVelocity the initial velocity of the animation
+     */
+    public void swipeRight(float initVelocity) {
+        swipeRight(initVelocity, 0);
+    }
+
+    /**
+     * Swipes right the delegated view after a certain delay.
+     * @param initVelocity the initial velocity of the animation
+     * @param delay the delay to wait before starting the animation
+     */
+    public void swipeRight(float initVelocity, long delay) {
+        animateToDelayed(-((View)mView.getParent()).getWidth(), initVelocity, delay);
+    }
+
+    /**
+     * Just like {@link SwipeableViewDelegate#swipeLeft(float, long)} but start instantly instead.
+     * @param initVelocity the initial velocity of the animation
+     */
+    public void swipeLeft(float initVelocity) {
+        swipeLeft(initVelocity, 0);
+    }
+
+    /**
+     * Swipes left the delegated view after a certain delay.
+     * @param initVelocity the initial velocity of the animation
+     * @param delay the delay to wait before starting the animation
+     */
+    public void swipeLeft(float initVelocity, long delay) {
+        animateToDelayed(-((View)mView.getParent()).getWidth(), initVelocity, delay);
+    }
+
+    /**
+     * Just like {@link SwipeableViewDelegate#swipeBack(float, long)} but start instantly instead.
+     * @param initVelocity the initial velocity of the animation
+     */
+    public void swipeBack(float initVelocity) {
+        swipeBack(initVelocity, 0);
+    }
+
+    /**
+     * Swipes the delegated view to the initial position after a certain delay.
+     * @param initVelocity the initial velocity of the animation
+     * @param delay the delay to wait before starting the animation
+     */
+    public void swipeBack(float initVelocity, long delay) {
+        animateToDelayed(0, initVelocity, delay);
     }
 
     /**
@@ -55,7 +102,7 @@ public class SwipeableViewDelegate {
      * @param delay the delay to wait before animating the view
      * @return the animator that will generate the animation
      */
-    public void animateToDelayed(float finalPosition, float initVelocity, long delay) {
+    private void animateToDelayed(float finalPosition, float initVelocity, long delay) {
         mTranslationAnimator.cancel();
         float initPosition = ViewHelper.getTranslationX(mView);
         ViewHelper.setAlpha(mView, translationToAlpha(initPosition));
@@ -80,7 +127,7 @@ public class SwipeableViewDelegate {
         boolean result = mGestureDetector.onTouchEvent(ev);
         if (!result && event.getActionMasked() == MotionEvent.ACTION_UP ||
             event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-            animateTo(0, 0);
+            swipeBack(0);
         }
         return result;
     }
@@ -115,24 +162,20 @@ public class SwipeableViewDelegate {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (!mIsDragging)
                 return false;
-            final int finalTranslate;
             if (Math.abs(velocityX) > mMinFlingVelocity ||
                     Math.abs(e2.getX()-e1.getX()) > mView.getWidth() / 2) {
-                int translateAbs = ((View)mView.getParent()).getWidth();
                 if (velocityX > mMinFlingVelocity || e2.getX() - e1.getX() > mView.getWidth() / 2)
-                    finalTranslate = translateAbs;
+                    swipeRight(velocityX);
                 else
-                    finalTranslate = -translateAbs;
-
+                    swipeLeft(velocityX);
                 if (mListener != null)
                     mListener.onSwipeOut();
 
             } else {
-                finalTranslate = 0;
+                swipeBack(velocityX);
                 if (mListener != null)
                     mListener.onSwipeBack();
             }
-            animateTo(finalTranslate, velocityX);
             return true;
         }
     }
