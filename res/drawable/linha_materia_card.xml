@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item >
-        <shape android:shape="rectangle">
-            <solid android:color="#D4D4D4"/>
-            <corners
-                    android:bottomRightRadius="2dp"
-                    android:bottomLeftRadius="2dp"
-                    android:topLeftRadius="2dp"
-                    android:topRightRadius="2dp"/>
-        </shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <layer-list>
+            <item >
+                <shape android:shape="rectangle">
+                    <solid android:color="#D4D4D4"/>
+                    <corners
+                            android:bottomRightRadius="2dp"
+                            android:bottomLeftRadius="2dp"
+                            android:topLeftRadius="2dp"
+                            android:topRightRadius="2dp"/>
+                </shape>
+            </item>
+            <item android:bottom="2dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="#F0F0F0"/>
+                    <corners
+                            android:bottomRightRadius="2dp"
+                            android:bottomLeftRadius="2dp"
+                            android:topLeftRadius="2dp"
+                            android:topRightRadius="2dp"/>
+                </shape>
+            </item>
+        </layer-list>
     </item>
-    <item android:bottom="2dp">
-        <shape android:shape="rectangle">
-            <solid android:color="@android:color/white"/>
-            <corners
-                    android:bottomRightRadius="2dp"
-                    android:bottomLeftRadius="2dp"
-                    android:topLeftRadius="2dp"
-                    android:topRightRadius="2dp"/>
-        </shape>
+    <item>
+        <layer-list>
+            <item >
+                <shape android:shape="rectangle">
+                    <solid android:color="#D4D4D4"/>
+                    <corners
+                            android:bottomRightRadius="2dp"
+                            android:bottomLeftRadius="2dp"
+                            android:topLeftRadius="2dp"
+                            android:topRightRadius="2dp"/>
+                </shape>
+            </item>
+            <item android:bottom="2dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/white"/>
+                    <corners
+                            android:bottomRightRadius="2dp"
+                            android:bottomLeftRadius="2dp"
+                            android:topLeftRadius="2dp"
+                            android:topRightRadius="2dp"/>
+                </shape>
+            </item>
+        </layer-list>
     </item>
-</layer-list>
+</selector>

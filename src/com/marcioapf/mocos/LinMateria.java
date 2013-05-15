@@ -2,24 +2,38 @@ package com.marcioapf.mocos;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.*;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
+import com.marcioapf.mocos.animation.SpringInterpolator;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.nineoldandroids.util.IntProperty;
-import com.nineoldandroids.util.Property;
 import com.nineoldandroids.view.ViewHelper;
 
 @SuppressLint("ViewConstructor")
 public class LinMateria extends LinearLayout {
+
+    private static boolean block_delete_subject = false;
+    private static Runnable reset_block_delete_flag = new Runnable() {
+        @Override
+        public void run() {
+            block_delete_subject = false;
+        }
+    };
 
     private final CheckBox cbChecked;
     private final TextView tvMateria;
@@ -27,9 +41,11 @@ public class LinMateria extends LinearLayout {
     private final Button btnAddAtraso, btnRemAtraso, btnAddFalta, btnRemFalta;
     private final TextView tvFaltas;
 
-    private final ObjectAnimator textColorAnimator;
-    private final ObjectAnimator progressBarAnimator;
-    private final ObjectAnimator checkBoxAlphaAnimator;
+    private ObjectAnimator textColorAnimator;
+    private ObjectAnimator progressBarAnimator;
+    private ObjectAnimator checkBoxAlphaAnimator;
+    private ObjectAnimator cardTranslationAnimator;
+    private SpringInterpolator cardTranslationInterpolator;
 
     private final IntProperty<ProgressBar> progressProperty = new IntProperty<ProgressBar>("progress") {
         @Override
@@ -42,6 +58,9 @@ public class LinMateria extends LinearLayout {
         }
     };
     private final Interpolator accDeccInterpolator = new AccelerateDecelerateInterpolator();
+
+    private final GestureDetector mGestureDetector;
+    private final ViewConfiguration mViewConfiguration;
 
     private MateriaData data;
     private final Handler handlerTimer = new Handler(Looper.myLooper());
@@ -71,23 +90,6 @@ public class LinMateria extends LinearLayout {
         btnAddAtraso = getView(R.id.add_atraso);
         btnAddFalta = getView(R.id.add_falta);
 
-        // animators
-        textColorAnimator = AnimatorCreationUtil.ofTextColor(
-            new TextView[]{tvFaltas, tvMateria}, 300, Color.DKGRAY);
-        progressBarAnimator = ObjectAnimator.ofInt(pBarFaltas, progressProperty, 0);
-        progressBarAnimator.setInterpolator(accDeccInterpolator);
-        progressBarAnimator.setDuration(120);
-        checkBoxAlphaAnimator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0);
-        checkBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (!data.isCheckNeeded()) {
-                    cbChecked.setVisibility(INVISIBLE);
-                    cbChecked.setChecked(true);
-                }
-            }
-        });
-
         data = new MateriaData();
 
         this.setStrNome(strMateria);
@@ -97,6 +99,12 @@ public class LinMateria extends LinearLayout {
 
         ((Activity)context).registerForContextMenu(this);
         configureViews();
+        configureAnimators();
+        MateriaGestureListener gestureListener = new MateriaGestureListener();
+        mGestureDetector = new GestureDetector(context, gestureListener);
+        mViewConfiguration = ViewConfiguration.get(context);
+        setOnLongClickListener(gestureListener); // we have to set this to manually show the context
+                                                 // menu and update the block delete scheduled flag
         update();
     }
 
@@ -147,6 +155,29 @@ public class LinMateria extends LinearLayout {
         btnAddFalta.setOnClickListener(buttonListener);
     }
 
+    private void configureAnimators() {
+        textColorAnimator = AnimatorCreationUtil.ofTextColor(
+            new TextView[]{tvFaltas, tvMateria}, 300, Color.DKGRAY);
+        progressBarAnimator = ObjectAnimator.ofInt(pBarFaltas, progressProperty, 0);
+        progressBarAnimator.setInterpolator(accDeccInterpolator);
+        progressBarAnimator.setDuration(120);
+        checkBoxAlphaAnimator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0);
+        checkBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!data.isCheckNeeded()) {
+                    cbChecked.setVisibility(INVISIBLE);
+                    cbChecked.setChecked(true);
+                }
+            }
+        });
+        cardTranslationInterpolator = new SpringInterpolator(100.0, 15.0);
+        cardTranslationAnimator = ObjectAnimator.ofPropertyValuesHolder(this,
+            PropertyValuesHolder.ofFloat("translationX", 0),
+            PropertyValuesHolder.ofFloat("alpha", 1));
+        cardTranslationAnimator.setInterpolator(cardTranslationInterpolator);
+    }
+
     public void update() {
         tvFaltas.setText((float) data.getAtrasos() / 2 + "/" + ((int) Math.ceil(0.15f * 16 * data.getAulasSemanais())));
         tvMateria.setText(data.getStrNome());
@@ -181,6 +212,61 @@ public class LinMateria extends LinearLayout {
             checkBoxAlphaAnimator.setDuration(300);
             checkBoxAlphaAnimator.start();
         }
+    }
+
+    public float translationToAlpha(float translation) {
+        return 1 - Math.abs(translation / ((View)getParent()).getWidth());
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        return handleTouch(event) || super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return handleTouch(event) || super.onTouchEvent(event);
+    }
+
+    private boolean handleTouch(MotionEvent event) {
+        MotionEvent ev = MotionEvent.obtain(event);
+        ev.setLocation(event.getRawX(), event.getRawY());
+        boolean result = mGestureDetector.onTouchEvent(ev);
+        if (!result && event.getActionMasked() == MotionEvent.ACTION_UP ||
+            event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+            animateTo(0, 0);
+        }
+        return result;
+    }
+
+    public void animateTo(float finalPosition, float initVelocity) {
+        animateToDelayed(finalPosition, initVelocity, 0);
+    }
+
+    /**
+     * Animates this card to a certain position on the x coordinate.
+     * @param finalPosition the position where to move to
+     * @param initVelocity the initial velocity of the animation
+     * @param delay the delay to wait before animating the view
+     * @return the animator that will generate the animation
+     */
+    public void animateToDelayed(float finalPosition, float initVelocity, long delay) {
+        cardTranslationAnimator.cancel();
+        float initPosition = ViewHelper.getTranslationX(this);
+        ViewHelper.setAlpha(this, translationToAlpha(initPosition));
+        if (initPosition == finalPosition && initVelocity == 0) {
+            return;
+        }
+        cardTranslationInterpolator
+            .setInitialVelocity(initVelocity / (finalPosition - initPosition));
+
+        cardTranslationAnimator.setValues(
+            PropertyValuesHolder.ofFloat("translationX", finalPosition),
+            PropertyValuesHolder.ofFloat("alpha", translationToAlpha(finalPosition)));
+        cardTranslationAnimator
+            .setDuration((long) (1000 * cardTranslationInterpolator.getDesiredDuration()));
+        cardTranslationAnimator.setStartDelay(delay);
+        cardTranslationAnimator.start();
     }
 
     public boolean isCheckNeeded() {
@@ -223,5 +309,94 @@ public class LinMateria extends LinearLayout {
 
     public <Type extends View> Type getView(int id) {
         return (Type)findViewById(id);
+    }
+
+    private class MateriaGestureListener
+            extends GestureDetector.SimpleOnGestureListener implements OnLongClickListener {
+        private boolean mIsDragging;
+        private boolean mIgnoreTouch;
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            mIsDragging = false;
+            mIgnoreTouch = block_delete_subject;
+            return false;
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            mIgnoreTouch = block_delete_subject = true;
+            showContextMenu();
+            getHandler().postDelayed(reset_block_delete_flag, 300);
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            boolean oldValue = mIsDragging;
+            mIsDragging =  mIsDragging || (!mIgnoreTouch &&
+                Math.abs(e2.getX() - e1.getX()) > mViewConfiguration.getScaledTouchSlop());
+            if (oldValue ^ mIsDragging) {
+                getParent().requestDisallowInterceptTouchEvent(true);
+                e2.setAction(MotionEvent.ACTION_CANCEL);
+                LinMateria.super.onTouchEvent(e2);
+            }
+            if (mIsDragging) {
+                cardTranslationAnimator.cancel();
+                View v = LinMateria.this;
+                ViewHelper.setTranslationX(v, ViewHelper.getTranslationX(v) - distanceX);
+                ViewHelper.setAlpha(v, translationToAlpha(ViewHelper.getTranslationX(v)));
+            }
+            return mIsDragging;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (!mIsDragging)
+                return false;
+            final int finalTranslate;
+            int flingVel = mViewConfiguration.getScaledMinimumFlingVelocity();
+            if (Math.abs(velocityX) > flingVel || Math.abs(e2.getX()-e1.getX()) > getWidth() / 2) {
+                if (velocityX > flingVel || e2.getX() - e1.getX() > getWidth() / 2)
+                    finalTranslate = getWidth();
+                else
+                    finalTranslate = -getWidth();
+
+                block_delete_subject = true;
+                getHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Remover")
+                            .setMessage("Tem certeza que deseja remover \"" + getStrNome() + "\"?")
+                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ((WelcomeActivity)getContext())
+                                        .animateSubjectOut(LinMateria.this);
+                                }
+                            })
+                            .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    animateTo(0, 0);
+                                }
+                            });
+                        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                animateTo(0, 0);
+                            }
+                        });
+                        builder.show();
+                        getHandler().postDelayed(reset_block_delete_flag, 300);
+                    }
+                }, 300);
+            } else
+                finalTranslate = 0;
+
+            animateTo(finalTranslate, velocityX);
+            return true;
+        }
     }
 }
