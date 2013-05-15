@@ -20,6 +20,7 @@ import com.marcioapf.mocos.animation.SpringInterpolator;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.nineoldandroids.util.IntProperty;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -171,7 +172,9 @@ public class LinMateria extends LinearLayout {
             }
         });
         cardTranslationInterpolator = new SpringInterpolator(100.0, 15.0);
-        cardTranslationAnimator = ObjectAnimator.ofFloat(this, "translationX", 0);
+        cardTranslationAnimator = ObjectAnimator.ofPropertyValuesHolder(this,
+            PropertyValuesHolder.ofFloat("translationX", 0),
+            PropertyValuesHolder.ofFloat("alpha", 1));
         cardTranslationAnimator.setInterpolator(cardTranslationInterpolator);
     }
 
@@ -211,6 +214,10 @@ public class LinMateria extends LinearLayout {
         }
     }
 
+    public float translationToAlpha(float translation) {
+        return 1 - Math.abs(translation / ((View)getParent()).getWidth());
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         return handleTouch(event) || super.onInterceptTouchEvent(event);
@@ -232,24 +239,33 @@ public class LinMateria extends LinearLayout {
         return result;
     }
 
+    public void animateTo(float finalPosition, float initVelocity) {
+        animateToDelayed(finalPosition, initVelocity, 0);
+    }
+
     /**
      * Animates this card to a certain position on the x coordinate.
      * @param finalPosition the position where to move to
      * @param initVelocity the initial velocity of the animation
+     * @param delay the delay to wait before animating the view
      * @return the animator that will generate the animation
      */
-    public void animateTo(float finalPosition, float initVelocity) {
+    public void animateToDelayed(float finalPosition, float initVelocity, long delay) {
         cardTranslationAnimator.cancel();
         float initPosition = ViewHelper.getTranslationX(this);
+        ViewHelper.setAlpha(this, translationToAlpha(initPosition));
         if (initPosition == finalPosition && initVelocity == 0) {
             return;
         }
         cardTranslationInterpolator
             .setInitialVelocity(initVelocity / (finalPosition - initPosition));
 
-        cardTranslationAnimator.setFloatValues(finalPosition);
+        cardTranslationAnimator.setValues(
+            PropertyValuesHolder.ofFloat("translationX", finalPosition),
+            PropertyValuesHolder.ofFloat("alpha", translationToAlpha(finalPosition)));
         cardTranslationAnimator
             .setDuration((long) (1000 * cardTranslationInterpolator.getDesiredDuration()));
+        cardTranslationAnimator.setStartDelay(delay);
         cardTranslationAnimator.start();
     }
 
@@ -329,6 +345,7 @@ public class LinMateria extends LinearLayout {
                 cardTranslationAnimator.cancel();
                 View v = LinMateria.this;
                 ViewHelper.setTranslationX(v, ViewHelper.getTranslationX(v) - distanceX);
+                ViewHelper.setAlpha(v, translationToAlpha(ViewHelper.getTranslationX(v)));
             }
             return mIsDragging;
         }

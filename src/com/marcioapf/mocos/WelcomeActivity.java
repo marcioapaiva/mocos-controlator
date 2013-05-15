@@ -8,18 +8,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
-import com.nineoldandroids.animation.*;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 
 import java.util.ArrayList;
@@ -70,16 +73,13 @@ public class WelcomeActivity extends Activity {
 				        arrLinMaterias.add(materia);
 				        llMaterias.addView(materia);
 				        sqlHelper.insertAndID(materia.getData());
-                        int initTranslation = - getWindowManager().getDefaultDisplay().getWidth();
-                        ViewHelper.setTranslationX(materia, initTranslation);
-                        Animator mtrAnimator = AnimatorCreationUtil.ofFloat(materia, "translationX",
-                            800, new DecelerateInterpolator(3.2f), 0);
+
+                        ViewHelper.setTranslationX(materia, -llMaterias.getWidth());
+                        materia.animateToDelayed(0, 0, 700);
+
                         btnAnimator.setFloatValues(1);
-                        
-                        AnimatorSet set = new AnimatorSet();
-                        set.play(mtrAnimator).after(700);
-                        set.play(btnAnimator).after(1100);
-                        set.start();
+                        btnAnimator.setStartDelay(1100);
+                        btnAnimator.start();
 				    }
 				}, new Runnable() {
                         @Override
@@ -188,39 +188,43 @@ public class WelcomeActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        AnimatorSet animatorSet = animateAll(0, getWindowManager().getDefaultDisplay().getWidth());
-        animatorSet.addListener(new AnimatorListenerAdapter() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void run() {
                 WelcomeActivity.super.onBackPressed();
             }
-        });
-        animatorSet.start();
+        }, animateAllTo(llMaterias.getWidth(), 0));
     }
 
-    private AnimatorSet animateAll(float alpha, float... translationX) {
-        final int cardOutDuration = 200, betweenCardsDelay = 80;
-        AnimatorSet animatorSet = new AnimatorSet();
-        Interpolator interpolator = new DecelerateInterpolator();
+    /**
+     * Animates all the cards displayed to a certain position on X. The total skipped classes text
+     * view and the add subject button will be animated to the provided alpha as well.
+     * @param cardsTranslateX the translation x position where to move the cards to
+     * @param tvAndBtntAlpha the alpha to set the text view and add subject button to
+     * @return the estimated duration of the whole animation
+     */
+    private long animateAllTo(final float cardsTranslateX, float tvAndBtntAlpha) {
+        final long betweenCardsDelay = 80;
         int size = arrLinMaterias.size();
-        for (int i = 0; i < size; i++) {
-            Animator anmtr = AnimatorCreationUtil.ofFloat(arrLinMaterias.get(i), "translationX",
-                cardOutDuration, interpolator, translationX);
-            animatorSet.play(anmtr).after(betweenCardsDelay * i);
-        }
-        int halfDuration = (cardOutDuration + betweenCardsDelay * (size - 1)) / 2;
+
+        for (int i = 0; i < size; i++)
+            arrLinMaterias.get(i).animateToDelayed(cardsTranslateX, 0, betweenCardsDelay * i);
+
+        long halfDuration = (betweenCardsDelay * size) / 2 + 120;
         Animator anmtr = AnimatorCreationUtil.ofFloat(btnAdicionar, "alpha", halfDuration, null,
-            alpha);
-        animatorSet.play(anmtr).after(halfDuration);
+            tvAndBtntAlpha);
+        anmtr.setStartDelay(halfDuration);
+        anmtr.start();
 
-        anmtr = AnimatorCreationUtil.ofFloat(tvFaltasTotais, "alpha", halfDuration, null, alpha);
-        animatorSet.play(anmtr).after(halfDuration);
+        anmtr = AnimatorCreationUtil.ofFloat(tvFaltasTotais, "alpha", halfDuration, null, tvAndBtntAlpha);
+        anmtr.setStartDelay(halfDuration);
+        anmtr.start();
 
-        return animatorSet;
+        return 2 * halfDuration;
     }
 
     public void animateSubjectOut(final LinMateria materia) {
-        final List<LinMateria> toBeAnimated = new ArrayList<LinMateria>();
+        final List<View> toBeAnimated = new ArrayList<View>();
         boolean after = false;
         for (LinMateria mtr : arrLinMaterias) {
             if (after)
@@ -228,13 +232,8 @@ public class WelcomeActivity extends Activity {
             if (mtr == materia)
                 after = true;
         }
-
-        ObjectAnimator removedAnimator = null;
-        if (ViewHelper.getTranslationX(materia) == 0) {
-            float finalTranslate = getWindowManager().getDefaultDisplay().getWidth();
-            removedAnimator = AnimatorCreationUtil.ofFloat(materia, "translationX", 500,
-                new DecelerateInterpolator(1.2f), finalTranslate);
-        }
+        toBeAnimated.add(btnAdicionar);
+        final int numberToBeAnimated = toBeAnimated.size();
 
         int maxScroll = scrollView.getChildAt(0).getHeight() - scrollView.getHeight(),
             materiaHeight = materia.getHeight();
@@ -246,11 +245,9 @@ public class WelcomeActivity extends Activity {
         listAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                Float value = (Float) animation.getAnimatedValue();
-                int size = toBeAnimated.size();
-                for (int i = 0; i < size; i++)
+                float value = (Float) animation.getAnimatedValue();
+                for (int i = 0; i < numberToBeAnimated; i++)
                     ViewHelper.setTranslationY(toBeAnimated.get(i), value);
-                ViewHelper.setTranslationY(btnAdicionar, value);
                 ViewHelper.setScrollY(scrollView,
                     (int) (initScroll + scrollBy * animation.getAnimatedFraction()));
             }
@@ -264,9 +261,8 @@ public class WelcomeActivity extends Activity {
                 updateTotal();
                 scrollView.setVerticalScrollBarEnabled(true);
                 scrollView.setOnTouchListener(null);
-                for (LinMateria mtr : toBeAnimated)
+                for (View mtr : toBeAnimated)
                     ViewHelper.setTranslationY(mtr, 0);
-                ViewHelper.setTranslationY(btnAdicionar, 0);
             }
         });
         listAnimator.setDuration(700);
@@ -278,12 +274,10 @@ public class WelcomeActivity extends Activity {
             }
         }); //disable user scrolling during the animation
 
-        if (removedAnimator != null) {
-            AnimatorSet set = new AnimatorSet();
-            set.play(listAnimator).after(removedAnimator);
-            set.start();
-        } else
-            listAnimator.start();
+        if (ViewHelper.getTranslationX(materia) == 0)
+            materia.animateTo(llMaterias.getWidth(), 0);
+        listAnimator.setStartDelay(500);
+        listAnimator.start();
     }
 
     private AlertDialog createEditSubjectDialog(LinMateria materia, Runnable success) {
