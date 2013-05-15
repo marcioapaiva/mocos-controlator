@@ -111,7 +111,7 @@ public class AbsenceActivity extends Activity {
 
     }
 
-    protected void updateTotal() {
+    public void updateTotal() {
     	totalAulasSemanais = 0;
     	totalAtrasos = 0;
 

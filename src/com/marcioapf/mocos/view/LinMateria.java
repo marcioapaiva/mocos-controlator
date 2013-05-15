@@ -38,19 +38,23 @@ public class LinMateria extends LinearLayout {
         }
     };
 
-    private final CheckBox cbChecked;
-    private final TextView tvMateria;
-    private final ProgressBar pBarFaltas;
-    private final Button btnAddAtraso, btnRemAtraso, btnAddFalta, btnRemFalta;
-    private final TextView tvFaltas;
+    private final CheckBox mCbChecked;
+    private final TextView mTvMateria;
+    private final ProgressBar mPBarFaltas;
+    private final Button mBtnAddAtraso;
+    private final Button mBtnRemAtraso;
+    private final Button mBtnAddFalta;
+    private final Button mBtnRemFalta;
+    private final TextView mTvFaltas;
 
-    private ObjectAnimator textColorAnimator;
-    private ObjectAnimator progressBarAnimator;
-    private ObjectAnimator checkBoxAlphaAnimator;
-    private ObjectAnimator cardTranslationAnimator;
-    private SpringInterpolator cardTranslationInterpolator;
+    private ObjectAnimator mTextColorAnimator;
+    private ObjectAnimator mProgressBarAnimator;
+    private ObjectAnimator mCheckBoxAlphaAnimator;
+    private ObjectAnimator mCardTranslationAnimator;
+    private SpringInterpolator mCardTranslationInterpolator;
 
-    private final IntProperty<ProgressBar> progressProperty = new IntProperty<ProgressBar>("progress") {
+    private final IntProperty<ProgressBar> progressProperty =
+      new IntProperty<ProgressBar>("progress") {
         @Override
         public void setValue(ProgressBar object, int value) {
             object.setProgress(value);
@@ -76,22 +80,24 @@ public class LinMateria extends LinearLayout {
     };
 
     public LinMateria(Context context, MateriaData materiaData){
-        this(context, materiaData.getStrNome(), materiaData.getAulasSemanais(), materiaData.isCheckNeeded());
-        this.setAtrasos(materiaData.getAtrasos());
-        this.getData().setSqlID(materiaData.getSqlID());
+        this(context, materiaData.getStrNome(),
+            materiaData.getAulasSemanais(), materiaData.isCheckNeeded());
+        setAtrasos(materiaData.getAtrasos());
+        getData().setSqlID(materiaData.getSqlID());
+
         update();
     }
     public LinMateria(Context context, String strMateria, int aulasSemanais, boolean checkNeeded) {
         super(context);
         inflate(context, R.layout.linha_materia, this);
-        tvMateria = getView(R.id.tv_materia);
-        tvFaltas = getView(R.id.tv_faltas);
-        pBarFaltas = getView(R.id.pbar_faltas);
-        cbChecked = getView(R.id.cb_checked);
-        btnRemFalta = getView(R.id.rem_falta);
-        btnRemAtraso = getView(R.id.rem_atraso);
-        btnAddAtraso = getView(R.id.add_atraso);
-        btnAddFalta = getView(R.id.add_falta);
+        mTvMateria = getView(R.id.tv_materia);
+        mTvFaltas = getView(R.id.tv_faltas);
+        mPBarFaltas = getView(R.id.pbar_faltas);
+        mCbChecked = getView(R.id.cb_checked);
+        mBtnRemFalta = getView(R.id.rem_falta);
+        mBtnRemAtraso = getView(R.id.rem_atraso);
+        mBtnAddAtraso = getView(R.id.add_atraso);
+        mBtnAddFalta = getView(R.id.add_falta);
 
         data = new MateriaData();
 
@@ -112,17 +118,17 @@ public class LinMateria extends LinearLayout {
     }
 
     private void configureViews() {
-        tvFaltas.setText((float)data.getAtrasos()/2 + "/" + ((int)Math.ceil((float)0.15f*16*data.getAulasSemanais())));
+        mTvFaltas.setText((float) data.getAtrasos() / 2 + "/" +
+            ((int) Math.ceil((float) 0.15f * 16 * data.getAulasSemanais())));
 
-        cbChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mCbChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     handlerTimer.postDelayed(timerHelper, 2000);
 
                     data.setCheckNeeded(false);
                     System.out.println("is checked");
-                }
-                else {
+                } else {
                     System.out.println("not checked");
                     handlerTimer.removeCallbacks(timerHelper);
                     data.setCheckNeeded(true);
@@ -152,68 +158,69 @@ public class LinMateria extends LinearLayout {
                 ((AbsenceActivity)getContext()).updateTotal();
             }
         };
-        btnAddAtraso.setOnClickListener(buttonListener);
-        btnRemAtraso.setOnClickListener(buttonListener);
-        btnRemFalta.setOnClickListener(buttonListener);
-        btnAddFalta.setOnClickListener(buttonListener);
+        mBtnAddAtraso.setOnClickListener(buttonListener);
+        mBtnRemAtraso.setOnClickListener(buttonListener);
+        mBtnRemFalta.setOnClickListener(buttonListener);
+        mBtnAddFalta.setOnClickListener(buttonListener);
     }
 
     private void configureAnimators() {
-        textColorAnimator = AnimatorCreationUtil.ofTextColor(
-            new TextView[]{tvFaltas, tvMateria}, 300, Color.DKGRAY);
-        progressBarAnimator = ObjectAnimator.ofInt(pBarFaltas, progressProperty, 0);
-        progressBarAnimator.setInterpolator(accDeccInterpolator);
-        progressBarAnimator.setDuration(120);
-        checkBoxAlphaAnimator = ObjectAnimator.ofFloat(cbChecked, "alpha", 0);
-        checkBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
+        mTextColorAnimator = AnimatorCreationUtil.ofTextColor(
+            new TextView[]{mTvFaltas, mTvMateria}, 300, Color.DKGRAY);
+        mProgressBarAnimator = ObjectAnimator.ofInt(mPBarFaltas, progressProperty, 0);
+        mProgressBarAnimator.setInterpolator(accDeccInterpolator);
+        mProgressBarAnimator.setDuration(120);
+        mCheckBoxAlphaAnimator = ObjectAnimator.ofFloat(mCbChecked, "alpha", 0);
+        mCheckBoxAlphaAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (!data.isCheckNeeded()) {
-                    cbChecked.setVisibility(INVISIBLE);
-                    cbChecked.setChecked(true);
+                    mCbChecked.setVisibility(INVISIBLE);
+                    mCbChecked.setChecked(true);
                 }
             }
         });
-        cardTranslationInterpolator = new SpringInterpolator(100.0, 15.0);
-        cardTranslationAnimator = ObjectAnimator.ofPropertyValuesHolder(this,
+        mCardTranslationInterpolator = new SpringInterpolator(100.0, 15.0);
+        mCardTranslationAnimator = ObjectAnimator.ofPropertyValuesHolder(this,
             PropertyValuesHolder.ofFloat("translationX", 0),
             PropertyValuesHolder.ofFloat("alpha", 1));
-        cardTranslationAnimator.setInterpolator(cardTranslationInterpolator);
+        mCardTranslationAnimator.setInterpolator(mCardTranslationInterpolator);
     }
 
     public void update() {
-        tvFaltas.setText((float) data.getAtrasos() / 2 + "/" + ((int) Math.ceil(0.15f * 16 * data.getAulasSemanais())));
-        tvMateria.setText(data.getStrNome());
-        if (pBarFaltas.getProgress() != data.getAtrasos() * 1000) {
-            pBarFaltas.setMax(2000 * (int) Math.ceil(0.15f * 16 * data.getAulasSemanais()));
-            progressBarAnimator.setIntValues(data.getAtrasos() * 1000);
-            progressBarAnimator.start();
+        mTvFaltas.setText((float) data.getAtrasos() / 2 + "/" +
+            ((int) Math.ceil(0.15f * 16 * data.getAulasSemanais())));
+        mTvMateria.setText(data.getStrNome());
+        if (mPBarFaltas.getProgress() != data.getAtrasos() * 1000) {
+            mPBarFaltas.setMax(2000 * (int) Math.ceil(0.15f * 16 * data.getAulasSemanais()));
+            mProgressBarAnimator.setIntValues(data.getAtrasos() * 1000);
+            mProgressBarAnimator.start();
         }
 
         if(2*(int)Math.ceil(0.15f*16*data.getAulasSemanais()) - data.getAtrasos() <= 4) {
-            if (tvFaltas.getCurrentTextColor() != Color.RED) {
-                textColorAnimator.setIntValues(Color.RED);
-                textColorAnimator.start();
+            if (mTvFaltas.getCurrentTextColor() != Color.RED) {
+                mTextColorAnimator.setIntValues(Color.RED);
+                mTextColorAnimator.start();
             }
-        } else if (tvFaltas.getCurrentTextColor() != Color.DKGRAY) {
-            textColorAnimator.setIntValues(Color.DKGRAY);
-            textColorAnimator.start();
+        } else if (mTvFaltas.getCurrentTextColor() != Color.DKGRAY) {
+            mTextColorAnimator.setIntValues(Color.DKGRAY);
+            mTextColorAnimator.start();
         }
         System.out.println("updated");
 
         if(data.isCheckNeeded()){
-            if (cbChecked.getVisibility() != VISIBLE) {
-                cbChecked.setVisibility(VISIBLE);
-                cbChecked.setChecked(false);
-                checkBoxAlphaAnimator.setFloatValues(0, 1);
-                checkBoxAlphaAnimator.setDuration(500);
-                checkBoxAlphaAnimator.start();
+            if (mCbChecked.getVisibility() != VISIBLE) {
+                mCbChecked.setVisibility(VISIBLE);
+                mCbChecked.setChecked(false);
+                mCheckBoxAlphaAnimator.setFloatValues(0, 1);
+                mCheckBoxAlphaAnimator.setDuration(500);
+                mCheckBoxAlphaAnimator.start();
             }
         }
-        else if (cbChecked.getVisibility() != INVISIBLE) {
-            checkBoxAlphaAnimator.setFloatValues(1, 0);
-            checkBoxAlphaAnimator.setDuration(300);
-            checkBoxAlphaAnimator.start();
+        else if (mCbChecked.getVisibility() != INVISIBLE) {
+            mCheckBoxAlphaAnimator.setFloatValues(1, 0);
+            mCheckBoxAlphaAnimator.setDuration(300);
+            mCheckBoxAlphaAnimator.start();
         }
     }
 
@@ -254,22 +261,22 @@ public class LinMateria extends LinearLayout {
      * @return the animator that will generate the animation
      */
     public void animateToDelayed(float finalPosition, float initVelocity, long delay) {
-        cardTranslationAnimator.cancel();
+        mCardTranslationAnimator.cancel();
         float initPosition = ViewHelper.getTranslationX(this);
         ViewHelper.setAlpha(this, translationToAlpha(initPosition));
         if (initPosition == finalPosition && initVelocity == 0) {
             return;
         }
-        cardTranslationInterpolator
+        mCardTranslationInterpolator
             .setInitialVelocity(initVelocity / (finalPosition - initPosition));
 
-        cardTranslationAnimator.setValues(
+        mCardTranslationAnimator.setValues(
             PropertyValuesHolder.ofFloat("translationX", finalPosition),
             PropertyValuesHolder.ofFloat("alpha", translationToAlpha(finalPosition)));
-        cardTranslationAnimator
-            .setDuration((long) (1000 * cardTranslationInterpolator.getDesiredDuration()));
-        cardTranslationAnimator.setStartDelay(delay);
-        cardTranslationAnimator.start();
+        mCardTranslationAnimator
+            .setDuration((long) (1000 * mCardTranslationInterpolator.getDesiredDuration()));
+        mCardTranslationAnimator.setStartDelay(delay);
+        mCardTranslationAnimator.start();
     }
 
     public boolean isCheckNeeded() {
@@ -295,7 +302,7 @@ public class LinMateria extends LinearLayout {
 
     public void setStrNome(String strNome){
         data.setStrNome(strNome);
-        tvMateria.setText(strNome);
+        mTvMateria.setText(strNome);
     }
 
     public MateriaData getData() {
@@ -345,7 +352,7 @@ public class LinMateria extends LinearLayout {
                 LinMateria.super.onTouchEvent(e2);
             }
             if (mIsDragging) {
-                cardTranslationAnimator.cancel();
+                mCardTranslationAnimator.cancel();
                 View v = LinMateria.this;
                 ViewHelper.setTranslationX(v, ViewHelper.getTranslationX(v) - distanceX);
                 ViewHelper.setAlpha(v, translationToAlpha(ViewHelper.getTranslationX(v)));
