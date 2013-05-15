@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.marcioapf.mocos.data.MateriaMemos;
+import com.marcioapf.mocos.data.SQLHelper;
 
 public class NotasActivity extends Activity {
 	
@@ -37,7 +39,7 @@ public class NotasActivity extends Activity {
 		tvNomeMateria.setText(strNomeMateria + " - Notas");
 		et1bim.setText(mMemos.getS1bim());
 		et2bim.setText(mMemos.getS2bim());
-		etExame.setText(mMemos.getsExame());
+		etExame.setText(mMemos.getSExame());
 	}
 	
 	@Override

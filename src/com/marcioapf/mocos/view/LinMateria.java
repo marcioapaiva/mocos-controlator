@@ -1,4 +1,4 @@
-package com.marcioapf.mocos;
+package com.marcioapf.mocos.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,6 +15,9 @@ import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.*;
+import com.marcioapf.mocos.AbsenceActivity;
+import com.marcioapf.mocos.data.MateriaData;
+import com.marcioapf.mocos.R;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
 import com.marcioapf.mocos.animation.SpringInterpolator;
 import com.nineoldandroids.animation.Animator;
@@ -146,7 +149,7 @@ public class LinMateria extends LinearLayout {
                         break;
                 }
                 update();
-                ((WelcomeActivity)getContext()).updateTotal();
+                ((AbsenceActivity)getContext()).updateTotal();
             }
         };
         btnAddAtraso.setOnClickListener(buttonListener);
@@ -372,7 +375,7 @@ public class LinMateria extends LinearLayout {
                             .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ((WelcomeActivity)getContext())
+                                    ((AbsenceActivity)getContext())
                                         .animateSubjectOut(LinMateria.this);
                                 }
                             })

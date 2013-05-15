@@ -19,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
+import com.marcioapf.mocos.data.MateriaData;
+import com.marcioapf.mocos.data.SQLHelper;
+import com.marcioapf.mocos.view.LinMateria;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -28,7 +31,7 @@ import com.nineoldandroids.view.ViewHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WelcomeActivity extends Activity {
+public class AbsenceActivity extends Activity {
 
     ScrollView scrollView;
 	LinearLayout llMaterias;//, llPrincipal;
@@ -62,7 +65,7 @@ public class WelcomeActivity extends Activity {
 
 		btnAdicionar.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				final LinMateria materia = new LinMateria(WelcomeActivity.this, "Nova", 4, false);
+				final LinMateria materia = new LinMateria(AbsenceActivity.this, "Nova", 4, false);
 
                 final ObjectAnimator btnAnimator = ObjectAnimator.ofFloat(btnAdicionar, "alpha", 0);
                 btnAnimator.setDuration(500);
@@ -191,7 +194,7 @@ public class WelcomeActivity extends Activity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                WelcomeActivity.super.onBackPressed();
+                AbsenceActivity.super.onBackPressed();
             }
         }, animateAllTo(llMaterias.getWidth(), 0));
     }

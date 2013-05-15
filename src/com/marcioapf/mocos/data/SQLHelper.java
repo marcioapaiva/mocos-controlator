@@ -1,4 +1,4 @@
-package com.marcioapf.mocos;
+package com.marcioapf.mocos.data;
 
 import java.util.ArrayList;
 
@@ -8,15 +8,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 public class SQLHelper extends SQLiteOpenHelper {
-
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "materias.db";
 
-	public static final String _ID = BaseColumns._ID;
+	private static final String _ID = BaseColumns._ID;
 	private static final String FIELD_NAME = "FIELD_NAME";
 	private static final String FIELD_ATRASOS = "FIELD_ATRASOS";
 	private static final String FIELD_AULAS_SEMANAIS = "FIELD_AULAS_SEMANAIS";
@@ -27,8 +25,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 	private static final String TABLE_NAME = "mocosTable";
 
-
-	SQLHelper(Context context) {
+	public SQLHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
@@ -61,8 +58,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 		values.put(FIELD_NAME, mData.getStrNome());
 		values.put(FIELD_ATRASOS, mData.getAtrasos());
 		values.put(FIELD_AULAS_SEMANAIS, mData.getAulasSemanais());
-		values.put(FIELD_CHECK_NEEDED, mData.checkNeeded);
-
+		values.put(FIELD_CHECK_NEEDED, mData.isCheckNeeded());
 
 		//values.put(FIELD_MEMOS1, atrasos);
 		//values.put(FIELD_MEMOS2, atrasos);
@@ -71,7 +67,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 		long id = db.insertOrThrow(TABLE_NAME, null, values);
 
 		db.close();
-
 		mData.setSqlID(id);
 
 		return id;
@@ -84,7 +79,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 		values.put(FIELD_NAME, mData.getStrNome());
 		values.put(FIELD_ATRASOS, mData.getAtrasos());
 		values.put(FIELD_AULAS_SEMANAIS, mData.getAulasSemanais());
-		values.put(FIELD_CHECK_NEEDED, mData.checkNeeded);
+		values.put(FIELD_CHECK_NEEDED, mData.isCheckNeeded());
 
 		db.update(TABLE_NAME, values, _ID+"="+mData.getSqlID(), null);
 
@@ -96,7 +91,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 		//TODO: remove temp
 		int temp = db.delete(TABLE_NAME, _ID+"="+id, null);
-		Log.w("Database", "Tentativa de deletar: " + temp);
 
 		db.close();
 	}
@@ -113,8 +107,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 		mdaux = new MateriaData();
 		mdaux.setSqlID(cursor.getInt(0));
 		mdaux.setStrNome(cursor.getString(1));
-		Log.w("Database", "Recuperado. Id: " + cursor.getInt(0) + 
-				"Nome: " + cursor.getString(1));
 		mdaux.setAtrasos(cursor.getInt(2));
 		mdaux.setAulasSemanais(cursor.getInt(3));
 		mdaux.setCheckNeeded(cursor.getInt(4)!=0);
@@ -136,8 +128,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 			mdaux = new MateriaData();
 			mdaux.setSqlID(cursor.getInt(0));
 			mdaux.setStrNome(cursor.getString(1));
-			Log.w("Database", "Recuperado. Id: " + cursor.getInt(0) + 
-					"Nome: " + cursor.getString(1));
 			mdaux.setAtrasos(cursor.getInt(2));
 			mdaux.setAulasSemanais(cursor.getInt(3));
 			mdaux.setCheckNeeded(cursor.getInt(4)!=0);
@@ -174,7 +164,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put(FIELD_MEMOS1, mMemos.getS1bim());
 		values.put(FIELD_MEMOS2, mMemos.getS2bim());
-		values.put(FIELD_MEMOS3, mMemos.getsExame());
+		values.put(FIELD_MEMOS3, mMemos.getSExame());
 
 		db.update(TABLE_NAME, values, _ID+"="+mMemos.getSqlID(), null);
 
