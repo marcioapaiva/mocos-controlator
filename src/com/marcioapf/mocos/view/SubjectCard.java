@@ -8,24 +8,19 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.*;
 import com.marcioapf.mocos.AbsenceActivity;
 import com.marcioapf.mocos.R;
 import com.marcioapf.mocos.animation.AnimatorCreationUtil;
-import com.marcioapf.mocos.animation.SpringInterpolator;
 import com.marcioapf.mocos.data.SubjectData;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
-import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.nineoldandroids.util.IntProperty;
-import com.nineoldandroids.view.ViewHelper;
 
 @SuppressLint("ViewConstructor")
 public class SubjectCard extends LinearLayout {
@@ -50,8 +45,8 @@ public class SubjectCard extends LinearLayout {
     private ObjectAnimator mTextColorAnimator;
     private ObjectAnimator mProgressBarAnimator;
     private ObjectAnimator mCheckBoxAlphaAnimator;
-    private ObjectAnimator mCardTranslationAnimator;
-    private SpringInterpolator mCardTranslationInterpolator;
+
+    private SwipeableViewDelegate mSwipeDelegate;
 
     private final IntProperty<ProgressBar> mProgressProperty =
       new IntProperty<ProgressBar>("progress") {
@@ -65,9 +60,6 @@ public class SubjectCard extends LinearLayout {
         }
     };
     private final Interpolator mAccDeccInterpolator = new AccelerateDecelerateInterpolator();
-
-    private final GestureDetector mGestureDetector;
-    private final ViewConfiguration mViewConfiguration;
 
     private SubjectData mData;
     private final Handler mHandlerTimer = new Handler(Looper.myLooper());
@@ -109,11 +101,6 @@ public class SubjectCard extends LinearLayout {
         ((Activity)context).registerForContextMenu(this);
         configureViews();
         configureAnimators();
-        MateriaGestureListener gestureListener = new MateriaGestureListener();
-        mGestureDetector = new GestureDetector(context, gestureListener);
-        mViewConfiguration = ViewConfiguration.get(context);
-        setOnLongClickListener(gestureListener); // we have to set this to manually show the context
-                                                 // menu and update the block delete scheduled flag
         update();
     }
 
@@ -162,6 +149,18 @@ public class SubjectCard extends LinearLayout {
         mRemoveDelayButton.setOnClickListener(buttonListener);
         mRemoveAbsenceButton.setOnClickListener(buttonListener);
         mAddAbsenceButton.setOnClickListener(buttonListener);
+
+        mSwipeDelegate = new SwipeableViewDelegate(this);
+        mSwipeDelegate.setOnSwipeListener(new CardSwipeOutListener());
+        setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                block_delete_subject = true;
+                showContextMenu();
+                getHandler().postDelayed(reset_block_delete_flag, 300);
+                return true;
+            }
+        }); // we have to set this to manually show the context menu and block the swipe motion
     }
 
     private void configureAnimators() {
@@ -180,11 +179,6 @@ public class SubjectCard extends LinearLayout {
                 }
             }
         });
-        mCardTranslationInterpolator = new SpringInterpolator(100.0, 15.0);
-        mCardTranslationAnimator = ObjectAnimator.ofPropertyValuesHolder(this,
-            PropertyValuesHolder.ofFloat("translationX", 0),
-            PropertyValuesHolder.ofFloat("alpha", 1));
-        mCardTranslationAnimator.setInterpolator(mCardTranslationInterpolator);
     }
 
     public void update() {
@@ -225,59 +219,24 @@ public class SubjectCard extends LinearLayout {
         }
     }
 
-    public float translationToAlpha(float translation) {
-        return 1 - Math.abs(translation / ((View)getParent()).getWidth());
-    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return handleTouch(event) || super.onInterceptTouchEvent(event);
+        return (!block_delete_subject && mSwipeDelegate.handleTouch(event))
+            || super.onInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return handleTouch(event) || super.onTouchEvent(event);
+        return (!block_delete_subject && mSwipeDelegate.handleTouch(event))
+            || super.onTouchEvent(event);
     }
 
-    private boolean handleTouch(MotionEvent event) {
-        MotionEvent ev = MotionEvent.obtain(event);
-        ev.setLocation(event.getRawX(), event.getRawY());
-        boolean result = mGestureDetector.onTouchEvent(ev);
-        if (!result && event.getActionMasked() == MotionEvent.ACTION_UP ||
-            event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-            animateTo(0, 0);
-        }
-        return result;
+    public void swipeRight(float initVelocity, long delay) {
+        mSwipeDelegate.swipeRight(initVelocity, delay);
     }
 
-    public void animateTo(float finalPosition, float initVelocity) {
-        animateToDelayed(finalPosition, initVelocity, 0);
-    }
-
-    /**
-     * Animates this card to a certain position on the x coordinate.
-     * @param finalPosition the position where to move to
-     * @param initVelocity the initial velocity of the animation
-     * @param delay the delay to wait before animating the view
-     * @return the animator that will generate the animation
-     */
-    public void animateToDelayed(float finalPosition, float initVelocity, long delay) {
-        mCardTranslationAnimator.cancel();
-        float initPosition = ViewHelper.getTranslationX(this);
-        ViewHelper.setAlpha(this, translationToAlpha(initPosition));
-        if (initPosition == finalPosition && initVelocity == 0) {
-            return;
-        }
-        mCardTranslationInterpolator
-            .setInitialVelocity(initVelocity / (finalPosition - initPosition));
-
-        mCardTranslationAnimator.setValues(
-            PropertyValuesHolder.ofFloat("translationX", finalPosition),
-            PropertyValuesHolder.ofFloat("alpha", translationToAlpha(finalPosition)));
-        mCardTranslationAnimator
-            .setDuration((long) (1000 * mCardTranslationInterpolator.getDesiredDuration()));
-        mCardTranslationAnimator.setStartDelay(delay);
-        mCardTranslationAnimator.start();
+    public void swipeBack(float initVelocity, long delay) {
+        mSwipeDelegate.swipeBack(initVelocity, delay);
     }
 
     public boolean isCheckNeeded() {
@@ -322,92 +281,52 @@ public class SubjectCard extends LinearLayout {
         return (Type)findViewById(id);
     }
 
-    private class MateriaGestureListener
-            extends GestureDetector.SimpleOnGestureListener implements OnLongClickListener {
-        private boolean mIsDragging;
-        private boolean mIgnoreTouch;
+    private class CardSwipeOutListener implements SwipeableViewDelegate.OnSwipeListener {
 
         @Override
-        public boolean onDown(MotionEvent e) {
-            mIsDragging = false;
-            mIgnoreTouch = block_delete_subject;
-            return false;
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            mIgnoreTouch = block_delete_subject = true;
-            showContextMenu();
-            getHandler().postDelayed(reset_block_delete_flag, 300);
-            return true;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            boolean oldValue = mIsDragging;
-            mIsDragging =  mIsDragging || (!mIgnoreTouch &&
-                Math.abs(e2.getX() - e1.getX()) > mViewConfiguration.getScaledTouchSlop());
-            if (oldValue ^ mIsDragging) {
-                getParent().requestDisallowInterceptTouchEvent(true);
-                e2.setAction(MotionEvent.ACTION_CANCEL);
-                SubjectCard.super.onTouchEvent(e2);
-            }
-            if (mIsDragging) {
-                mCardTranslationAnimator.cancel();
-                View v = SubjectCard.this;
-                ViewHelper.setTranslationX(v, ViewHelper.getTranslationX(v) - distanceX);
-                ViewHelper.setAlpha(v, translationToAlpha(ViewHelper.getTranslationX(v)));
-            }
-            return mIsDragging;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (!mIsDragging)
-                return false;
-            final int finalTranslate;
-            int flingVel = mViewConfiguration.getScaledMinimumFlingVelocity();
-            if (Math.abs(velocityX) > flingVel || Math.abs(e2.getX()-e1.getX()) > getWidth() / 2) {
-                if (velocityX > flingVel || e2.getX() - e1.getX() > getWidth() / 2)
-                    finalTranslate = getWidth();
-                else
-                    finalTranslate = -getWidth();
-
-                block_delete_subject = true;
-                getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setTitle("Remover")
-                            .setMessage("Tem certeza que deseja remover \"" + getStrNome() + "\"?")
-                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ((AbsenceActivity)getContext())
-                                        .animateSubjectOut(SubjectCard.this);
-                                }
-                            })
-                            .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    animateTo(0, 0);
-                                }
-                            });
-                        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+        public void onSwipeOut() {
+            final Handler handler = getHandler();
+            if (handler == null)
+                return;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Remover")
+                        .setMessage("Tem certeza que deseja remover \"" + getStrNome() + "\"?")
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onCancel(DialogInterface dialog) {
-                                animateTo(0, 0);
+                            public void onClick(DialogInterface dialog, int which) {
+                                ((AbsenceActivity)getContext()).animateSubjectOut(SubjectCard.this);
+                            }
+                        })
+                        .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mSwipeDelegate.swipeBack(0);
                             }
                         });
-                        builder.show();
-                        getHandler().postDelayed(reset_block_delete_flag, 300);
-                    }
-                }, 300);
-            } else
-                finalTranslate = 0;
+                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            mSwipeDelegate.swipeBack(0);
+                        }
+                    });
+                    builder.show();
+                    handler.postDelayed(reset_block_delete_flag, 300);
+                }
+            }, 300);
+        }
 
-            animateTo(finalTranslate, velocityX);
-            return true;
+        @Override
+        public void onStartTracking(MotionEvent event) {
+            MotionEvent motionEvent = MotionEvent.obtain(event);
+            motionEvent.setAction(MotionEvent.ACTION_CANCEL);
+            SubjectCard.super.onTouchEvent(event);
+        }
+
+        @Override
+        public void onSwipeBack() {
         }
     }
 }

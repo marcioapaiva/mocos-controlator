@@ -73,7 +73,7 @@ public class AbsenceActivity extends Activity {
                             mSqlHelper.insertAndID(materia.getData());
 
                             ViewHelper.setTranslationX(materia, -mSubjectsLayout.getWidth());
-                            materia.animateToDelayed(0, 0, 700);
+                            materia.swipeBack(0, 700);
 
                             btAnimator.setFloatValues(1);
                             btAnimator.setStartDelay(1100);
@@ -187,38 +187,39 @@ public class AbsenceActivity extends Activity {
         }
     }
 
+    private boolean mBackRequested = false;
     @Override
     public void onBackPressed() {
+        if (mBackRequested)
+            return;
+        mBackRequested = true;
+        long duration = animateClearAll();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 AbsenceActivity.super.onBackPressed();
             }
-        }, animateAllTo(mSubjectsLayout.getWidth(), 0));
+        }, duration);
     }
 
     /**
-     * Animates all the cards displayed to a certain position on X. The total skipped classes text
-     * view and the add subject button will be animated to the provided alpha as well.
-     * @param cardsTranslateX the translation x position where to move the cards to
-     * @param tvAndBtntAlpha the alpha to set the text view and add subject button to
+     * Animates all the cards displayed out of the screen. The total skipped classes text
+     * view and the add subject button will also be animated to a 0 alpha.
      * @return the estimated duration of the whole animation
      */
-    private long animateAllTo(final float cardsTranslateX, float tvAndBtntAlpha) {
+    private long animateClearAll() {
         final long betweenCardsDelay = 80;
         int size = mSubjectCards.size();
 
         for (int i = 0; i < size; i++)
-            mSubjectCards.get(i).animateToDelayed(cardsTranslateX, 0, betweenCardsDelay * i);
+            mSubjectCards.get(i).swipeRight(0, betweenCardsDelay * i);
 
         long halfDuration = (betweenCardsDelay * size) / 2 + 120;
-        Animator anmtr = AnimatorCreationUtil.ofFloat(mAddButton, "alpha", halfDuration, null,
-            tvAndBtntAlpha);
+        Animator anmtr = AnimatorCreationUtil.ofFloat(mAddButton, "alpha", halfDuration, null, 0);
         anmtr.setStartDelay(halfDuration);
         anmtr.start();
 
-        anmtr = AnimatorCreationUtil.ofFloat(mTotalAbsencesTextView, "alpha", halfDuration, null,
-            tvAndBtntAlpha);
+        anmtr = AnimatorCreationUtil.ofFloat(mTotalAbsencesTextView, "alpha", halfDuration, null,0);
         anmtr.setStartDelay(halfDuration);
         anmtr.start();
 
@@ -277,7 +278,7 @@ public class AbsenceActivity extends Activity {
         }); //disable user scrolling during the animation
 
         if (ViewHelper.getTranslationX(materia) == 0)
-            materia.animateTo(mSubjectsLayout.getWidth(), 0);
+            materia.swipeRight(0, 0);
         listAnimator.setStartDelay(500);
         listAnimator.start();
     }
