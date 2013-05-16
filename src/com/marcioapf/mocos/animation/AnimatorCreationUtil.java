@@ -37,16 +37,6 @@ public class AnimatorCreationUtil {
         return animator;
     }
 
-    public static ObjectAnimator ofPropertyValuesHolder(Object object,
-                                                        long duration,
-                                                        Interpolator interpolator,
-                                                        PropertyValuesHolder... values) {
-        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(object, values);
-        animator.setDuration(duration);
-        animator.setInterpolator(interpolator);
-        return animator;
-    }
-
     public static ObjectAnimator ofTextColor(TextView tv, long duration, Integer... values) {
         return AnimatorCreationUtil.ofTextColor(new TextView[]{tv}, duration, values);
     }

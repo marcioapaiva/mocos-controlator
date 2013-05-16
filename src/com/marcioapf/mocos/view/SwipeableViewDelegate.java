@@ -6,10 +6,25 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import com.marcioapf.mocos.animation.SpringInterpolator;
 import com.nineoldandroids.animation.ObjectAnimator;
-import com.nineoldandroids.animation.PropertyValuesHolder;
+import com.nineoldandroids.util.FloatProperty;
+import com.nineoldandroids.util.Property;
 import com.nineoldandroids.view.ViewHelper;
 
 public class SwipeableViewDelegate {
+
+    private final Property<View, Float> mViewTranslationProperty = new FloatProperty<View>("translation") {
+
+        @Override
+        public void setValue(View object, float value) {
+            ViewHelper.setTranslationX(object, value);
+            ViewHelper.setAlpha(object, translationToAlpha(value));
+        }
+
+        @Override
+        public Float get(View object) {
+            return ViewHelper.getTranslationX(object);
+        }
+    };
 
     private final View mView;
     private final GestureDetector mGestureDetector;
@@ -30,9 +45,7 @@ public class SwipeableViewDelegate {
         mTouchSlope = vc.getScaledTouchSlop();
 
         mTranslationInterpolator = new SpringInterpolator(100.0, 15.0);
-        mTranslationAnimator = ObjectAnimator.ofPropertyValuesHolder(mView,
-            PropertyValuesHolder.ofFloat("translationX", 0),
-            PropertyValuesHolder.ofFloat("alpha", 1));
+        mTranslationAnimator = ObjectAnimator.ofFloat(mView, mViewTranslationProperty, 0);
         mTranslationAnimator.setInterpolator(mTranslationInterpolator);
     }
 
@@ -112,9 +125,7 @@ public class SwipeableViewDelegate {
         mTranslationInterpolator
             .setInitialVelocity(initVelocity / (finalPosition - initPosition));
 
-        mTranslationAnimator.setValues(
-            PropertyValuesHolder.ofFloat("translationX", finalPosition),
-            PropertyValuesHolder.ofFloat("alpha", translationToAlpha(finalPosition)));
+        mTranslationAnimator.setFloatValues(finalPosition);
         mTranslationAnimator
             .setDuration((long) (1000 * mTranslationInterpolator.getDesiredDuration()));
         mTranslationAnimator.setStartDelay(delay);
