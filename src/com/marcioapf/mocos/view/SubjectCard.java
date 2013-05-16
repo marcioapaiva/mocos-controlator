@@ -1,6 +1,5 @@
 package com.marcioapf.mocos.view;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,8 +7,11 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.*;
@@ -22,7 +24,6 @@ import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.util.IntProperty;
 
-@SuppressLint("ViewConstructor")
 public class SubjectCard extends LinearLayout {
 
     private static boolean block_delete_subject = false;
@@ -33,14 +34,14 @@ public class SubjectCard extends LinearLayout {
         }
     };
 
-    private final CheckBox mCheckedCheckBox;
-    private final TextView mSubjectTextView;
-    private final ProgressBar mAbsencesProgressBar;
-    private final Button mRemoveAbsenceButton;
-    private final Button mRemoveDelayButton;
-    private final Button mAddDelayButton;
-    private final Button mAddAbsenceButton;
-    private final TextView mAbsencesTextView;
+    private CheckBox mCheckedCheckBox;
+    private TextView mSubjectTextView;
+    private ProgressBar mAbsencesProgressBar;
+    private Button mRemoveAbsenceButton;
+    private Button mRemoveDelayButton;
+    private Button mAddDelayButton;
+    private Button mAddAbsenceButton;
+    private TextView mAbsencesTextView;
 
     private ObjectAnimator mTextColorAnimator;
     private ObjectAnimator mProgressBarAnimator;
@@ -62,7 +63,7 @@ public class SubjectCard extends LinearLayout {
     private final Interpolator mAccDeccInterpolator = new AccelerateDecelerateInterpolator();
 
     private SubjectData mData;
-    private final Handler mHandlerTimer = new Handler(Looper.myLooper());
+    private final Handler mHandler = new Handler(Looper.myLooper());
     private final Runnable mTimerHelper = new Runnable() {
         @Override
         public void run() {
@@ -71,17 +72,18 @@ public class SubjectCard extends LinearLayout {
         }
     };
 
-    public SubjectCard(Context context, SubjectData subjectData){
-        this(context, subjectData.getName(),
-            subjectData.getWeeklyClasses(), subjectData.isCheckNeeded());
-        setAtrasos(subjectData.getDelays());
-        getData().setSqlID(subjectData.getSqlID());
-
-        update();
+    public SubjectCard(Context context) {
+        this(context, null);
     }
-    public SubjectCard(Context context, String subject, int weeklyClasses, boolean checkNeeded) {
-        super(context);
-        inflate(context, R.layout.linha_materia, this);
+
+    public SubjectCard(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
         mSubjectTextView = getView(R.id.tv_materia);
         mAbsencesTextView = getView(R.id.tv_faltas);
         mAbsencesProgressBar = getView(R.id.pbar_faltas);
@@ -91,33 +93,29 @@ public class SubjectCard extends LinearLayout {
         mAddDelayButton = getView(R.id.add_atraso);
         mAddAbsenceButton = getView(R.id.add_falta);
 
-        mData = new SubjectData();
-
-        this.setSubjectName(subject);
-        mData.setWeeklyClasses(weeklyClasses);
-        mData.setDelays(0);
-        mData.setCheckNeeded(checkNeeded);
-
-        ((Activity)context).registerForContextMenu(this);
+        ((Activity)getContext()).registerForContextMenu(this);
         configureViews();
         configureAnimators();
-        update();
+    }
+
+    public static SubjectCard createSubjectCard(Context context, SubjectData data, ViewGroup parent) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        SubjectCard card = (SubjectCard) inflater.inflate(R.layout.linha_materia, parent, false);
+        card.setSubjectData(data);
+        return card;
     }
 
     private void configureViews() {
-        mAbsencesTextView.setText((float) mData.getDelays() / 2 + "/" +
-            ((int) Math.ceil((float) 0.15f * 16 * mData.getWeeklyClasses())));
-
         mCheckedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mHandlerTimer.postDelayed(mTimerHelper, 2000);
+                    mHandler.postDelayed(mTimerHelper, 2000);
 
                     mData.setCheckNeeded(false);
                     System.out.println("is checked");
                 } else {
                     System.out.println("not checked");
-                    mHandlerTimer.removeCallbacks(mTimerHelper);
+                    mHandler.removeCallbacks(mTimerHelper);
                     mData.setCheckNeeded(true);
                 }
             }
@@ -157,7 +155,7 @@ public class SubjectCard extends LinearLayout {
             public boolean onLongClick(View v) {
                 block_delete_subject = true;
                 showContextMenu();
-                getHandler().postDelayed(reset_block_delete_flag, 300);
+                mHandler.postDelayed(reset_block_delete_flag, 300);
                 return true;
             }
         }); // we have to set this to manually show the context menu and block the swipe motion
@@ -182,6 +180,8 @@ public class SubjectCard extends LinearLayout {
     }
 
     public void update() {
+        if (mData == null)
+            return;
         mAbsencesTextView.setText((float) mData.getDelays() / 2 + "/" +
             ((int) Math.ceil(0.15f * 16 * mData.getWeeklyClasses())));
         mSubjectTextView.setText(mData.getName());
@@ -211,8 +211,7 @@ public class SubjectCard extends LinearLayout {
                 mCheckBoxAlphaAnimator.setDuration(500);
                 mCheckBoxAlphaAnimator.start();
             }
-        }
-        else if (mCheckedCheckBox.getVisibility() != INVISIBLE) {
+        } else if (mCheckedCheckBox.getVisibility() != INVISIBLE) {
             mCheckBoxAlphaAnimator.setFloatValues(1, 0);
             mCheckBoxAlphaAnimator.setDuration(300);
             mCheckBoxAlphaAnimator.start();
@@ -277,6 +276,12 @@ public class SubjectCard extends LinearLayout {
         mData.setWeeklyClasses(aulasSemanais);
     }
 
+    public void setSubjectData(SubjectData data) {
+        mData = data;
+        mSubjectTextView.setText(data.getName());
+        update();
+    }
+
     public <Type extends View> Type getView(int id) {
         return (Type)findViewById(id);
     }
@@ -285,10 +290,7 @@ public class SubjectCard extends LinearLayout {
 
         @Override
         public void onSwipeOut() {
-            final Handler handler = getHandler();
-            if (handler == null)
-                return;
-            handler.postDelayed(new Runnable() {
+            mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -313,7 +315,7 @@ public class SubjectCard extends LinearLayout {
                         }
                     });
                     builder.show();
-                    handler.postDelayed(reset_block_delete_flag, 300);
+                    mHandler.postDelayed(reset_block_delete_flag, 300);
                 }
             }, 300);
         }

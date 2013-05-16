@@ -13,7 +13,7 @@ public class SubjectData {
 	}
 	
 	public SubjectData(){
-		this(4, 0, "Nova", true);
+		this(4, 0, "Nova", false);
 	}
 	
 	public SubjectData(int weeklyClasses, int delays, String name, boolean checkNeeded) {

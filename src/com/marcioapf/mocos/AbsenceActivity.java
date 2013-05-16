@@ -60,7 +60,8 @@ public class AbsenceActivity extends Activity {
 
 		mAddButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                final SubjectCard materia = new SubjectCard(AbsenceActivity.this, "Nova", 4, false);
+                final SubjectCard materia = SubjectCard.createSubjectCard(
+                        AbsenceActivity.this, new SubjectData(), mSubjectsLayout);
 
                 final ObjectAnimator btAnimator = ObjectAnimator.ofFloat(mAddButton, "alpha", 0);
                 btAnimator.setDuration(500);
@@ -96,7 +97,7 @@ public class AbsenceActivity extends Activity {
 
     	ArrayList<SubjectData> materiasData = mSqlHelper.retrieveAllMateriaData();
     	for (SubjectData mData : materiasData){
-    		mSubjectCards.add(new SubjectCard(this, mData));
+    		mSubjectCards.add(SubjectCard.createSubjectCard(this, mData, mSubjectsLayout));
     	}
 
         for (SubjectCard lm : mSubjectCards)
