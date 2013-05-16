@@ -236,7 +236,7 @@ public class SubjectCard extends LinearLayout {
     }
 
     public void swipeBack(float initVelocity, long delay) {
-        mSwipeDelegate.swipeRight(initVelocity, delay);
+        mSwipeDelegate.swipeBack(initVelocity, delay);
     }
 
     public boolean isCheckNeeded() {
