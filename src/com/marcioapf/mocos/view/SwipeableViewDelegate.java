@@ -71,7 +71,7 @@ public class SwipeableViewDelegate {
      * @param delay the delay to wait before starting the animation
      */
     public void swipeRight(float initVelocity, long delay) {
-        animateToDelayed(-((View)mView.getParent()).getWidth(), initVelocity, delay);
+        animateToDelayed(((View)mView.getParent()).getWidth(), initVelocity, delay);
     }
 
     /**

@@ -285,7 +285,10 @@ public class SubjectCard extends LinearLayout {
 
         @Override
         public void onSwipeOut() {
-            getHandler().postDelayed(new Runnable() {
+            final Handler handler = getHandler();
+            if (handler == null)
+                return;
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -310,7 +313,7 @@ public class SubjectCard extends LinearLayout {
                         }
                     });
                     builder.show();
-                    getHandler().postDelayed(reset_block_delete_flag, 300);
+                    handler.postDelayed(reset_block_delete_flag, 300);
                 }
             }, 300);
         }
