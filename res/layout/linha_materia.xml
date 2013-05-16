@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.marcioapf.mocos.view.SubjectCard
+    xmlns:android="http://schemas.android.com/apk/res/android"
           android:orientation="vertical"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -98,4 +99,4 @@
                 android:minWidth="70dp"
                 android:id="@+id/tv_faltas"/>
     </LinearLayout>
-</LinearLayout>
+</com.marcioapf.mocos.view.SubjectCard>
