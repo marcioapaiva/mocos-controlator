@@ -125,8 +125,8 @@ public class SwipeableViewDelegate {
         MotionEvent ev = MotionEvent.obtain(event);
         ev.setLocation(event.getRawX(), event.getRawY());
         boolean result = mGestureDetector.onTouchEvent(ev);
-        if (!result && event.getActionMasked() == MotionEvent.ACTION_UP ||
-            event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+        if (!result && (event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP ||
+                (event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_CANCEL) {
             swipeBack(0);
         }
         return result;
