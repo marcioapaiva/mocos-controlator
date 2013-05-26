@@ -294,11 +294,14 @@ public class AbsenceActivity extends Activity {
         View dialogContent = View.inflate(this, R.layout.edit_dialog, null);
         final TextView etNomeMateria = (TextView) dialogContent
                 .findViewById(R.id.nome_materia);
+        final TextView etProfessorName = (TextView) dialogContent
+                .findViewById(R.id.professor_name);
         final TextView etAulasSemanais = (TextView) dialogContent
                 .findViewById(R.id.maximo_atrasos);
 
-        etNomeMateria.setText(materia.getStrNome());
-        etAulasSemanais.setText(Integer.toString(materia.getAulasSemanais()));
+        etNomeMateria.setText(materia.getData().getName());
+        etProfessorName.setText(materia.getData().getProfessorName());
+        etAulasSemanais.setText(Integer.toString(materia.getData().getWeeklyClasses()));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Edição de Matéria")
@@ -307,6 +310,7 @@ public class AbsenceActivity extends Activity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     materia.setSubjectName(etNomeMateria.getText().toString());
+                    materia.setProfessorName(etProfessorName.getText().toString());
                     materia.setAulasSemanais(
                         Integer.parseInt(etAulasSemanais.getText().toString()));
                     materia.update();
