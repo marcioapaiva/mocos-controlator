@@ -17,13 +17,27 @@
                   android:layout_marginRight="5dp"
                   android:id="@+id/interaction_layout"
                   android:gravity="center">
-        <TextView
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nova"
                 android:textSize="22sp"
                 android:minWidth="100dp"
                 android:id="@+id/tv_materia"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Professor"
+                android:textSize="14sp"
+                android:id="@+id/tv_professor"/>
+
+        </LinearLayout>
 
         <LinearLayout android:orientation="horizontal"
                       android:layout_width="match_parent"
@@ -84,7 +98,7 @@
                   android:layout_marginRight="5dp"
                   android:id="@+id/lin_materia_bot">
         <ProgressBar
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:id="@+id/pbar_faltas"
