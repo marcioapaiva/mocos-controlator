@@ -314,6 +314,7 @@ public class AbsenceActivity extends Activity {
                     materia.setAulasSemanais(
                         Integer.parseInt(etAulasSemanais.getText().toString()));
                     materia.update();
+                    updateTotal();
                     if (success != null)
                         success.run();
                 }
