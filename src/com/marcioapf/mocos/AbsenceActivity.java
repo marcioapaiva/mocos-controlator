@@ -112,8 +112,8 @@ public class AbsenceActivity extends Activity {
     	mTotalDelays = 0;
 
     	for (SubjectCard materia : mSubjectCards){
-    		mTotalWeeklyClasses += materia.getAulasSemanais();
-    		mTotalDelays += materia.getAtrasos();
+    		mTotalWeeklyClasses += materia.getData().getWeeklyClasses();
+    		mTotalDelays += materia.getData().getDelays();
     	}
 
     	if((int)(2*Math.ceil((float)0.10f*16* mTotalWeeklyClasses)) - mTotalDelays <=
@@ -164,7 +164,7 @@ public class AbsenceActivity extends Activity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Remover")
                     .setMessage("Tem certeza que deseja remover \"" +
-                        mSelectedSubject.getStrNome() +"\"?")
+                        mSelectedSubject.getData().getName() +"\"?")
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

@@ -36,6 +36,7 @@ public class SubjectCard extends LinearLayout {
 
     private CheckBox mCheckedCheckBox;
     private TextView mSubjectTextView;
+    private TextView mProfessorTextView;
     private ProgressBar mAbsencesProgressBar;
     private Button mRemoveAbsenceButton;
     private Button mRemoveDelayButton;
@@ -85,6 +86,7 @@ public class SubjectCard extends LinearLayout {
         super.onFinishInflate();
 
         mSubjectTextView = getView(R.id.tv_materia);
+        mProfessorTextView = getView(R.id.tv_professor);
         mAbsencesTextView = getView(R.id.tv_faltas);
         mAbsencesProgressBar = getView(R.id.pbar_faltas);
         mCheckedCheckBox = getView(R.id.cb_checked);
@@ -163,7 +165,7 @@ public class SubjectCard extends LinearLayout {
 
     private void configureAnimators() {
         mTextColorAnimator = AnimatorCreationUtil.ofTextColor(
-            new TextView[]{mAbsencesTextView, mSubjectTextView}, 300, Color.DKGRAY);
+            new TextView[]{mAbsencesTextView, mSubjectTextView, mProfessorTextView}, 300, Color.DKGRAY);
         mProgressBarAnimator = ObjectAnimator.ofInt(mAbsencesProgressBar, mProgressProperty, 0);
         mProgressBarAnimator.setInterpolator(mAccDeccInterpolator);
         mProgressBarAnimator.setDuration(120);
@@ -185,6 +187,7 @@ public class SubjectCard extends LinearLayout {
         mAbsencesTextView.setText((float) mData.getDelays() / 2 + "/" +
             ((int) Math.ceil(0.15f * 16 * mData.getWeeklyClasses())));
         mSubjectTextView.setText(mData.getName());
+        mProfessorTextView.setText(mData.getProfessorName());
         if (mAbsencesProgressBar.getProgress() != mData.getDelays() * 1000) {
             mAbsencesProgressBar
                 .setMax(2000 * (int) Math.ceil(0.15f * 16 * mData.getWeeklyClasses()));
@@ -251,25 +254,18 @@ public class SubjectCard extends LinearLayout {
         update();
     }
 
-    public int getAtrasos(){
-        return mData.getDelays();
-    }
-
-    public String getStrNome(){
-        return mData.getName();
-    }
-
     public void setSubjectName(String name){
         mData.setName(name);
         mSubjectTextView.setText(name);
     }
 
-    public SubjectData getData() {
-        return mData;
+    public void setProfessorName(String name){
+        mData.setProfessorName(name);
+        mProfessorTextView.setText(name);
     }
 
-    public int getAulasSemanais() {
-        return mData.getWeeklyClasses();
+    public SubjectData getData() {
+        return mData;
     }
 
     public void setAulasSemanais(int aulasSemanais) {
@@ -279,6 +275,7 @@ public class SubjectCard extends LinearLayout {
     public void setSubjectData(SubjectData data) {
         mData = data;
         mSubjectTextView.setText(data.getName());
+        mProfessorTextView.setText(data.getProfessorName());
         update();
     }
 
@@ -295,7 +292,7 @@ public class SubjectCard extends LinearLayout {
                 public void run() {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Remover")
-                        .setMessage("Tem certeza que deseja remover \"" + getStrNome() + "\"?")
+                        .setMessage("Tem certeza que deseja remover \"" + mData.getName() + "\"?")
                         .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
