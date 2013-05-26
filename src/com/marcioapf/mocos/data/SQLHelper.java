@@ -11,11 +11,12 @@ import java.util.ArrayList;
 
 public class SQLHelper extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "materias.db";
 
 	private static final String _ID = BaseColumns._ID;
-	private static final String FIELD_NAME = "FIELD_NAME";
+    private static final String FIELD_NAME = "FIELD_NAME";
+    private static final String FIELD_PROFESSOR_NAME = "FIELD_PROFESSOR_NAME";
 	private static final String FIELD_ATRASOS = "FIELD_ATRASOS";
 	private static final String FIELD_AULAS_SEMANAIS = "FIELD_AULAS_SEMANAIS";
 	private static final String FIELD_CHECK_NEEDED = "FIELD_CHECK_NEEDED";
@@ -34,7 +35,8 @@ public class SQLHelper extends SQLiteOpenHelper {
 		String sql =
 				"CREATE TABLE " + TABLE_NAME + " (" +
 						_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-						FIELD_NAME + " TEXT NOT NULL, " +
+                        FIELD_NAME + " TEXT NOT NULL, " +
+                        FIELD_PROFESSOR_NAME + " TEXT, " +
 						FIELD_ATRASOS + " INTEGER, " +
 						FIELD_AULAS_SEMANAIS + " INTEGER, " +
 						FIELD_CHECK_NEEDED + " INTEGER, " +
@@ -48,14 +50,18 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Pesquisar o que fazer aqui
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME +
+                       " ADD COLUMN " + FIELD_PROFESSOR_NAME + " TEXT");
+        }
 	}
 
 	public long insertAndID(SubjectData mData) {
 		SQLiteDatabase db = getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(FIELD_NAME, mData.getName());
+        values.put(FIELD_NAME, mData.getName());
+        values.put(FIELD_PROFESSOR_NAME, mData.getProfessorName());
 		values.put(FIELD_ATRASOS, mData.getDelays());
 		values.put(FIELD_AULAS_SEMANAIS, mData.getWeeklyClasses());
 		values.put(FIELD_CHECK_NEEDED, mData.isCheckNeeded());
@@ -77,6 +83,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 		ContentValues values = new ContentValues();
 		values.put(FIELD_NAME, mData.getName());
+        values.put(FIELD_PROFESSOR_NAME, mData.getProfessorName());
 		values.put(FIELD_ATRASOS, mData.getDelays());
 		values.put(FIELD_AULAS_SEMANAIS, mData.getWeeklyClasses());
 		values.put(FIELD_CHECK_NEEDED, mData.isCheckNeeded());
@@ -95,7 +102,12 @@ public class SQLHelper extends SQLiteOpenHelper {
 		db.close();
 	}
 	public SubjectData retrieveMateriaDataById(long id){
-		String[] from = { _ID, FIELD_NAME, FIELD_ATRASOS, FIELD_AULAS_SEMANAIS, FIELD_CHECK_NEEDED };
+		String[] from = { _ID,
+                FIELD_NAME,
+                FIELD_PROFESSOR_NAME,
+                FIELD_ATRASOS,
+                FIELD_AULAS_SEMANAIS,
+                FIELD_CHECK_NEEDED };
 		String order = _ID;
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -106,17 +118,23 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 		mdaux = new SubjectData();
 		mdaux.setSqlID(cursor.getInt(0));
-		mdaux.setName(cursor.getString(1));
-		mdaux.setDelays(cursor.getInt(2));
-		mdaux.setWeeklyClasses(cursor.getInt(3));
-		mdaux.setCheckNeeded(cursor.getInt(4)!=0);
+        mdaux.setName(cursor.getString(1));
+        mdaux.setProfessorName(cursor.getString(2));
+		mdaux.setDelays(cursor.getInt(3));
+		mdaux.setWeeklyClasses(cursor.getInt(4));
+		mdaux.setCheckNeeded(cursor.getInt(5)!=0);
 
 		db.close();
 		return mdaux;
 	}
 
 	public ArrayList<SubjectData> retrieveAllMateriaData() {
-		String[] from = { _ID, FIELD_NAME, FIELD_ATRASOS, FIELD_AULAS_SEMANAIS, FIELD_CHECK_NEEDED };
+        String[] from = { _ID,
+                FIELD_NAME,
+                FIELD_PROFESSOR_NAME,
+                FIELD_ATRASOS,
+                FIELD_AULAS_SEMANAIS,
+                FIELD_CHECK_NEEDED };
 		String order = _ID;
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -128,9 +146,10 @@ public class SQLHelper extends SQLiteOpenHelper {
 			mdaux = new SubjectData();
 			mdaux.setSqlID(cursor.getInt(0));
 			mdaux.setName(cursor.getString(1));
-			mdaux.setDelays(cursor.getInt(2));
-			mdaux.setWeeklyClasses(cursor.getInt(3));
-			mdaux.setCheckNeeded(cursor.getInt(4)!=0);
+            mdaux.setProfessorName(cursor.getString(2));
+            mdaux.setDelays(cursor.getInt(3));
+            mdaux.setWeeklyClasses(cursor.getInt(4));
+            mdaux.setCheckNeeded(cursor.getInt(5)!=0);
 			subjectDataList.add(mdaux);
 		}
 

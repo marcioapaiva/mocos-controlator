@@ -6,6 +6,7 @@ public class SubjectData {
     private int mDelays;
     private long mSqlID;
     private String mName;
+    private String mProfessorName;
     private boolean mCheckNeeded;
 
 	public static int calculateMaxDelays(int weeklyClasses){
@@ -13,13 +14,14 @@ public class SubjectData {
 	}
 	
 	public SubjectData(){
-		this(4, 0, "Nova", false);
+		this(4, 0, "Nova", "", false);
 	}
 	
-	public SubjectData(int weeklyClasses, int delays, String name, boolean checkNeeded) {
+	public SubjectData(int weeklyClasses, int delays, String name, String professorName, boolean checkNeeded) {
 		mWeeklyClasses = weeklyClasses;
 		mDelays = delays;
 		mName = name;
+        mProfessorName = professorName;
 		mCheckNeeded = checkNeeded;
 		mSqlID = -1;
 	}
@@ -55,6 +57,14 @@ public class SubjectData {
 	public void setName(String name) {
 		mName = name;
 	}
+
+    public String getProfessorName() {
+        return mProfessorName;
+    }
+
+    public void setProfessorName(String professorName) {
+        mProfessorName = professorName;
+    }
 
 	public int getWeeklyClasses() {
 		return mWeeklyClasses;
