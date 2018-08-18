@@ -26,11 +26,14 @@ import com.nineoldandroids.util.IntProperty;
 
 public class SubjectCard extends LinearLayout {
 
-    private static boolean block_delete_subject = false;
+    // to enable swiping to delete subjects, just set this flag to false
+    private static final boolean DISABLE_SWIPE = true;
+
+    private static boolean block_delete_subject = DISABLE_SWIPE;
     private static Runnable reset_block_delete_flag = new Runnable() {
         @Override
         public void run() {
-            block_delete_subject = false;
+            block_delete_subject = DISABLE_SWIPE;
         }
     };
 
